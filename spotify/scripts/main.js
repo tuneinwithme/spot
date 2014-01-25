@@ -1,10 +1,11 @@
 require([
 	'$api/models',
 	'scripts/livedj'
-], function(models, LiveDJ) {
+], function(models, livedj) {
 	'use strict';
 
-	$(document).ready(LiveDJ.init);
+	window.LiveDJ = livedj.LiveDJ;
+	$(document).ready(livedj.LiveDJ.init);
 
 });
 

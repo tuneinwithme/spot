@@ -10,6 +10,66 @@ require([
 		self.roomName = undefined;
 		self.currentSongData = undefined;
 		self.lastTrackURL = undefined;
+		self.queue = undefined;
+		self.trackIndex = -1;
+		//jenny code
+
+		self.plTest = function() {
+			var playlist = models.Playlist.createTemporary('mytestplaylist').done(function(playlist) {
+				playlist.load('tracks').done(function(loadedPlaylist) {
+					loadedPlaylist.tracks.add(models.Track.fromURI("spotify:track:4VqPOruhp5EdPBeR92t6lQ"));
+					loadedPlaylist.tracks.add(models.Track.fromURI("spotify:track:5HF5PRNJ8KGtbzNPPc93tG"));
+					window.tracks = loadedPlaylist.tracks;
+				});
+			});
+		};
+
+		self.Queue = function() {
+			var queue = {};
+
+			models.Playlist.createTemporary().done(function(playlist) {
+				queue.spotify = playlist;
+			});
+
+			// queue.spotify = new models.Queue.createTemporary(); //spotify model
+			queue.addFromURL = function(trackURL) {
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					console.log('adding', trackURL, 'to queue');
+					loadedPlaylist.tracks.add(models.Track.fromURI(trackURL));
+				});
+			};
+			queue.addFromURLs = function(trackURLs) {
+				for (var i = 0; i < trackURLs.length; i++) {
+					var trackURL = trackURLs[i];
+					queue.addFromURL(trackURL);
+				}
+			};
+			queue.toArray = function(callback) {
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					loadedPlaylist.tracks.snapshot().done(function(snapshot){
+						var arr = [];
+						for (var i = 0; i < snapshot.length; i++) {
+							arr.push(snapshot.get(i).uri);
+						}
+						console.log(arr);
+						if (callback) callback(arr);
+					});
+				});
+			};
+			queue.removeByIndex = function(i) {
+				// queue.spotify.
+			};
+			queue.clear = function(callback) {
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					loadedPlaylist.tracks.clear();
+					if (callback) callback();
+				});
+			};
+			return queue;
+		};
+
+		// our array-backed playlist model, the real spotify playlist is held up to sync with this
+		self.playlist = undefined;
 
 		self.httpGet = function(theUrl){
 			var xmlHttp = null;
@@ -45,27 +105,72 @@ require([
 			if (self.currentSongData) self.currentSongData.off();
 			roomName = roomName.toLowerCase();
 			self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song');
-			self.currentSongData.on("value", self.onDataChange);
+			self.currentSongData.on("value", self.onSongDataChange);
+			self.queueData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/queue');
+			self.queue = new self.Queue();
 
 			self.updateInputIfNecessary('#roominput', roomName);
 			$('#roomname').text(roomName);
 			console.log("room changed to " + roomName);
 		};
 
-		self.onDataChange = function(data) {
-			// data = self.currentSongData;
+		// this is fired when Firebase(/song) data changes. being unused in favor of Firebase(/playlist)
+		self.onSongDataChange = function(data) {
 			if (!data) return;
 			self.lastInput = data.val();
-			self.lastTrackURL = self.inputToTrackURL(self.lastInput);
-			self.currentSongData.set(self.lastTrackURL);
-			self.updateInputIfNecessary('#songinput', self.lastTrackURL);
-			console.log("Track URL updated:", self.lastTrackURL);
-			self.playCurrentSong();
+			var trackURL = self.inputToTrackURL(self.lastInput); // dylan parse
+			if (trackURL == self.lastTrackURL) return;
+			self.currentSongData.set(trackURL); // fucking ghetto as shiiiiiieit
+			self.updateInputIfNecessary('#songinput', trackURL); // check if url is same thing
+			console.log("Track URL updated:", trackURL);
+			self.queue.addFromURL(trackURL);
+			self.playSong(trackURL);
+			self.lastTrackURL = trackURL;
 		};
 
-		self.playCurrentSong = function() {
+
+		/*		
+		this is fired when Firebase(/playlist) data changes.
+		self.onPlaylistDataChange = function(data) {
+			if (!data) return;
+			if (self.trackIndex != -1) 
+			self.lastInput = data.val();
+			self.lastTrackURL = self.inputToTrackURL(self.lastInput); // dylan parse
+			self.currentSongData.set(self.lastTrackURL); // fucking ghetto as shiiiiiieit
+			self.updateInputIfNecessary('#songinput', self.lastTrackURL); // check if url is same thing
+			console.log("Track URL updated:", self.lastTrackURL);
+			//self.playCurrentSong();
+			// jenny shit code
+			self.addToPlaylist();
+		};
+		*/
+
+
+
+		// jenny code
+		// self.listener = function() {
+		// 	models.player.addEventListener('change', self.callback());
+		// 	index ++; 
+		// }
+		// self.callback = function() {
+
+		// }
+
+		//jenny code
+		self.addToPlaylist = function() {
 			var track = models.Track.fromURI( self.lastTrackURL );
-			models.player.playTrack(track);
+			self.pl.add(track);
+		};
+
+		self.playSong = function(trackURL, callback) {
+			console.log('playing', trackURL);
+			models.player.load('track').done(function(loadedPlayer){
+				var prevTrackURL = loadedPlayer.track.uri;
+				if (!trackURL) return console.warn('trackURL is empty, not doing play');
+				if (prevTrackURL == trackURL) return console.warn('prevTrackURL == trackURL, not doing play');
+				var track = models.Track.fromURI( trackURL );
+				loadedPlayer.playTrack(track);
+			});
 		};
 
 		self.inputToTrackURL = function(input) {
@@ -91,12 +196,14 @@ require([
 			$('#songinput').select();
 			$('#submitRoom').click(self.submitRoom);
 			$('#submitSong').click(self.submitSong);
+			//
+			self.pl = new models.Playlist();
 		};
 
 
 		return self;
 	})();
 
-	exports.init = LiveDJ.init;
+	exports.LiveDJ = LiveDJ;
 
 });
