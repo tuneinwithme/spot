@@ -8,25 +8,46 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <!-- <script type="text/javascript" src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script> -->
 <script type="text/javascript">
-var roomSong = new Firebase('https://livedj01.firebaseio.com/rooms/test01/song');
-// var auth = new FirebaseSimpleLogin(chatRef, function(error, user) {
-//   console.log(error, user);
-// });
+LiveDJ = (function(){
+	var self = {};
 
-roomSong.on("value", function(data) {
-	if (data && data)
-	console.log("Data updated: ", data.val());
-});
+	self.roomName = undefined;
+	self.currentSongData = undefined;
+	self.lastTrackURL = undefined;
 
-function update() {
-	roomSong.set($('#songspotifyurl').val());
-}
+	self.changeRoom = function(roomname) {
+		var data = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomname+'/song');
+		// $('#roomname').text(roomname);
+		data.on("value", self.onChangeSong);
+		self.currentSongData = data;
+	}
+
+	self.onChangeSong = function(data) {
+		if (!data) return;
+		self.lastTrackURL = data.val();
+		console.log("Track URL updated: ", self.lastTrackURL);
+		// var track = models.Track.fromURI( self.lastTrackURL );
+		// models.player.playTrack(track);
+	}
+
+	self.update = function() {
+		self.currentSongData.set($('#input').val());
+	}
+
+	self.init = function() {
+		self.changeRoom('test01');
+	}
+
+	return self;
+})();
+
+$(document).ready(LiveDJ.init);
 </script>
 
 <form role="form">
   <div class="form-group">
-    <label for="songspotifyurl">Song Spotify URL</label>
-    <input type="text" class="form-control" id="songspotifyurl" placeholder="http://open.spotify.com/&hellip;">
+    <label for="input">Song Spotify URL</label>
+    <input type="text" class="form-control" id="input" placeholder="spotify:track:&hellip;">
   </div>
-  <button type="submit" onclick="update(); return false;" class="btn btn-default">ADD</button>
+  <button type="submit" id="submitSong" onclick="LiveDJ.update(); return false;" class="btn btn-default">ADD</button>
 </form>

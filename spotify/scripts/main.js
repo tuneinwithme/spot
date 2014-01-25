@@ -8,11 +8,11 @@ require([
 ], function(models, languageExample, coverExample, buttonExample, playlistExample, livedj) {
   'use strict';
 
-  languageExample.doHelloWorld();
-  coverExample.doCoverForAlbum();
-  buttonExample.doShareButtonForArtist();
-  buttonExample.doPlayButtonForAlbum();
-  playlistExample.doPlaylistForAlbum();
+  // languageExample.doHelloWorld();
+  // coverExample.doCoverForAlbum();
+  // buttonExample.doShareButtonForArtist();
+  // buttonExample.doPlayButtonForAlbum();
+  // playlistExample.doPlaylistForAlbum();
   livedj.init();
 
 });
