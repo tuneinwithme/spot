@@ -1,6 +1,16 @@
 <style type="text/css">
 	body {
-		padding: 3em;
+		padding: 2em;
+	}
+	.form-control.flasher {
+		background-color: white;
+		-webkit-transition: background-color 0.9s linear;
+			    transition: background-color 0.9s linear;
+	}
+	.form-control.flasher.flash {
+		background-color: #FFE68F;
+		-webkit-transition: background-color 0s linear;
+			    transition: background-color 0s linear;
 	}
 </style>
 <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
@@ -15,32 +25,47 @@ LiveDJ = (function(){
 	self.currentSongData = undefined;
 	self.lastTrackURL = undefined;
 
-	self.changeRoom = function(roomname) {
-		var data = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomname+'/song');
-		// $('#roomname').text(roomname);
-		data.on("value", self.onChangeSong);
-		self.currentSongData = data;
-		console.log("room changed to " + roomname);
+	self.updateInputIfNecessary = function(selector, value) {
+		$el = $(selector);
+		$el.select();
+		if ($el.val() != value)
+			$el.val(value);
+		$el.addClass('flash');
+		setTimeout(function() {
+			$el.removeClass('flash');
+		}, 0);
 	}
 
-	self.onChangeSong = function(data) {
+	self.changeRoom = function(roomName) {
+		roomName = roomName.toLowerCase();
+		self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song');
+		// $('#roomName').text(roomName);
+		self.currentSongData.on("value", self.onDataChange);
+
+		self.updateInputIfNecessary('#roominput', roomName);
+		console.log("room changed to " + roomName);
+	}
+
+	self.onDataChange = function(data) {
 		if (!data) return;
 		self.lastTrackURL = data.val();
+		self.updateInputIfNecessary('#songinput', self.lastTrackURL);
 		console.log("Track URL updated: ", self.lastTrackURL);
 		// var track = models.Track.fromURI( self.lastTrackURL );
 		// models.player.playTrack(track);
 	}
 
-	self.updateSong = function() {
+	self.submitSong = function() {
 		self.currentSongData.set($('#songinput').val());
 	}
 
-	self.updateRoom = function() {
+	self.submitRoom = function() {
 		self.changeRoom($('#roominput').val());
 	}
 
 	self.init = function() {
-		self.changeRoom('test01');
+		self.changeRoom('welcometohacktech');
+		$('#songinput').select();
 	}
 
 	return self;
@@ -52,15 +77,15 @@ $(document).ready(LiveDJ.init);
 <form role="form">
   <div class="form-group">
     <label for="input">Room ID</label>
-    <input type="text" class="form-control" id="roominput" placeholder="room:&hellip;">
+    <input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
   </div>
-  <button type="submit" id="changeRoom" onclick="LiveDJ.updateRoom(); return false;" class="btn btn-default">Change Room</button>
+  <button type="submit" id="submitRoom" onclick="LiveDJ.submitRoom(); return false;" class="btn btn-default">Change Room</button>
 </form>
 
 <form role="form">
   <div class="form-group">
     <label for="input">Song Spotify URL</label>
-    <input type="text" class="form-control" id="songinput" placeholder="spotify:track:&hellip;">
+    <input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
   </div>
-  <button type="submit" id="submitSong" onclick="LiveDJ.updateSong(); return false;" class="btn btn-default">Submit Song</button>
+  <button type="submit" id="submitSong" onclick="LiveDJ.submitSong(); return false;" class="btn btn-default">Submit Song</button>
 </form>
