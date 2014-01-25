@@ -19,29 +19,29 @@
 <!-- <script type="text/javascript" src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script> -->
 <script type="text/javascript">
 
-function httpGet(theUrl){
-    var xmlHttp = null;
-
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false );
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-}
-
-function search(query){
-    response = httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
-    res = JSON.parse(response)
-    if(res.tracks[0]){
-        return res.tracks[0].href;
-    }
-}
-
 LiveDJ = (function(){
 	var self = {};
 
 	self.roomName = undefined;
 	self.currentSongData = undefined;
 	self.lastTrackURL = undefined;
+
+	self.httpGet = function(theUrl){
+	    var xmlHttp = null;
+
+	    xmlHttp = new XMLHttpRequest();
+	    xmlHttp.open( "GET", theUrl, false );
+	    xmlHttp.send( null );
+	    return xmlHttp.responseText;
+	}
+
+	self.search = function(query){
+	    response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+	    res = JSON.parse(response)
+	    if (res.tracks[0]){
+	        return res.tracks[0].href;
+	    }
+	}
 
 	self.updateInputIfNecessary = function(selector, value) {
 		$el = $(selector);
@@ -66,11 +66,20 @@ LiveDJ = (function(){
 
 	self.onDataChange = function(data) {
 		if (!data) return;
-		self.lastTrackURL = data.val();
+		self.lastInput = data.val();
+		self.lastTrackURL = self.inputToTrackURL(self.lastInput);
+		self.currentSongData.set(self.lastTrackURL);
 		self.updateInputIfNecessary('#songinput', self.lastTrackURL);
 		console.log("Track URL updated: ", self.lastTrackURL);
 		// var track = models.Track.fromURI( self.lastTrackURL );
 		// models.player.playTrack(track);
+	}
+
+	self.inputToTrackURL = function(input) {
+		if (input.search(/^spotify:track:/) == 0) return input;
+		var m = input.match(/open.spotify.com\/track\/(\w+)/);
+		if (m) return 'spotify:track:' + m[1];
+		return self.search(input);
 	}
 
 	self.submitSong = function() {
