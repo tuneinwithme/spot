@@ -1,0 +1,32 @@
+<style type="text/css">
+	body {
+		padding: 1em;
+	}
+</style>
+<link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<script type="text/javascript" src='https://cdn.firebase.com/js/client/1.0.2/firebase.js'></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!-- <script type="text/javascript" src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script> -->
+<script type="text/javascript">
+var roomSong = new Firebase('https://livedj01.firebaseio.com/rooms/test01/song');
+// var auth = new FirebaseSimpleLogin(chatRef, function(error, user) {
+//   console.log(error, user);
+// });
+
+roomSong.on("value", function(data) {
+	if (data && data)
+	console.log("Data updated: ", data.val());
+});
+
+function update() {
+	roomSong.set($('#songspotifyurl').val());
+}
+</script>
+
+<form role="form">
+  <div class="form-group">
+    <label for="songspotifyurl">Song Spotify URL</label>
+    <input type="text" class="form-control" id="songspotifyurl" placeholder="http://open.spotify.com/&hellip;">
+  </div>
+  <button type="submit" onclick="update(); return false;" class="btn btn-default">ADD</button>
+</form>
