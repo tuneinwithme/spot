@@ -8,6 +8,24 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <!-- <script type="text/javascript" src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script> -->
 <script type="text/javascript">
+
+function httpGet(theUrl){
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+function search(query){
+    response = httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+    res = JSON.parse(response)
+    if(res.tracks[0]){
+        return res.tracks[0].href;
+    }
+}
+
 LiveDJ = (function(){
 	var self = {};
 
@@ -32,7 +50,9 @@ LiveDJ = (function(){
 	}
 
 	self.updateSong = function() {
-		self.currentSongData.set($('#songinput').val());
+		// $('#roominput').val() = search(roominput)
+		songName = search($('#songinput').val())
+		self.currentSongData.set(songName);
 	}
 
 	self.updateRoom = function() {
