@@ -2,6 +2,14 @@
 	body {
 		padding: 2em;
 	}
+	img.album {
+		max-width: 250px;
+	}
+	#albumContainer{
+		max-width:250px;
+		margin-left: auto;
+		margin-right: auto;
+	}
 	.form-control.flasher {
 		background-color: white;
 		-webkit-transition: background-color 0.9s linear;
@@ -12,6 +20,7 @@
 		-webkit-transition: background-color 0s linear;
 				transition: background-color 0s linear;
 	}
+	
 </style>
 <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
 <script type="text/javascript" src='https://cdn.firebase.com/js/client/1.0.2/firebase.js'></script>
@@ -36,11 +45,25 @@ LiveDJ = (function(){
 	}
 
 	self.search = function(query){
-		response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
-		res = JSON.parse(response)
+		var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+		var res = JSON.parse(response);
 		if (res.tracks[0]){
 			return res.tracks[0].href;
 		}
+	}
+
+	self.updatePicture = function(){
+		var trackID = self.lastTrackURL;
+		var response = $.getJSON('https://embed.spotify.com/oembed/?url='+trackID+'&callback=?', function(data) {
+			console.log(response);
+			// var res = JSON.parse(response);
+			$('#albumimage').attr('src', data.thumbnail_url);
+			var albumTitle = document.createElement('h2');
+			albumTitle.innerHTML = data.title;
+			console.log(albumTitle);
+			$('#titleContainer').html(albumTitle);
+		});
+
 	}
 
 	self.updateInputIfNecessary = function(selector, value) {
@@ -68,8 +91,9 @@ LiveDJ = (function(){
 		if (!data) return;
 		self.lastInput = data.val();
 		self.lastTrackURL = self.inputToTrackURL(self.lastInput);
-		self.currentSongData.set(self.lastTrackURL);
+		self.currentSongData.set(self.lastTrackURL ? self.lastTrackURL : null);
 		self.updateInputIfNecessary('#songinput', self.lastTrackURL);
+		self.updatePicture();
 		console.log("Track URL updated: ", self.lastTrackURL);
 		// var track = models.Track.fromURI( self.lastTrackURL );
 		// models.player.playTrack(track);
@@ -102,7 +126,10 @@ LiveDJ = (function(){
 
 $(document).ready(LiveDJ.init);
 </script>
-
+<div id="albumContainer">
+	<div id="titleContainer"></div>
+	<img class="album" id="albumimage" alt="sample">
+</div>
 <form role="form">
   <div class="form-group">
 	<label for="input">Room ID</label>
@@ -118,3 +145,4 @@ $(document).ready(LiveDJ.init);
   </div>
   <button type="submit" id="submitSong" onclick="LiveDJ.submitSong(); return false;" class="btn btn-default">Submit Song</button>
 </form>
+
