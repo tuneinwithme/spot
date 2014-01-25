@@ -1,0 +1,9 @@
+extends layout
+
+block content
+
+    form(role='form')
+        .form-group
+            label(for='input') Song Spotify URL
+            input#input.form-control(type='text', placeholder='spotify:track:…')
+          button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.update(); return false;') ADD
