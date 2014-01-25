@@ -1,1 +1,16 @@
 /* Include your CSS rules here */
+
+body {
+	background: none;
+	padding: 2em;
+}
+.form-control.flasher {
+	background-color: white;
+	-webkit-transition: background-color 0.9s linear;
+			transition: background-color 0.9s linear;
+}
+.form-control.flasher.flash {
+	background-color: #B2E13B;
+	-webkit-transition: background-color 0s linear;
+			transition: background-color 0s linear;
+}

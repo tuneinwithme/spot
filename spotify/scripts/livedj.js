@@ -11,24 +11,88 @@ require([
 		self.currentSongData = undefined;
 		self.lastTrackURL = undefined;
 
-		self.init = function() {
-			self.changeRoom('test01');
+		self.httpGet = function(theUrl){
+			var xmlHttp = null;
+
+			xmlHttp = new XMLHttpRequest();
+			xmlHttp.open( "GET", theUrl, false );
+			xmlHttp.send( null );
+			return xmlHttp.responseText;
 		};
 
-		self.changeRoom = function(roomname) {
-			var data = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomname+'/song');
-			$('#roomname').text(roomname);
-			data.on("value", self.onChangeSong);
-			self.currentSongData = data;
+		self.search = function(query){
+			var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+			var res = JSON.parse(response);
+			if (res.tracks[0]){
+				return res.tracks[0].href;
+			}
 		};
 
-		self.onChangeSong = function(data) {
+		self.updateInputIfNecessary = function(selector, value) {
+			// console.log(selector, 1);
+			var $el = $(selector);
+			// console.log(selector, 2);
+			
+			if ($el.val() != value)
+				$el.val(value);
+			$el.addClass('flash');
+			setTimeout(function() {
+				$el.removeClass('flash');
+			}, 0);
+		};
+
+		self.changeRoom = function(roomName) {
+			if (self.currentSongData) self.currentSongData.off();
+			roomName = roomName.toLowerCase();
+			self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song');
+			self.currentSongData.on("value", self.onDataChange);
+
+			self.updateInputIfNecessary('#roominput', roomName);
+			$('#roomname').text(roomName);
+			console.log("room changed to " + roomName);
+		};
+
+		self.onDataChange = function(data) {
+			// data = self.currentSongData;
 			if (!data) return;
-			self.lastTrackURL = data.val();
-			console.log("Track URL updated: ", self.lastTrackURL);
+			self.lastInput = data.val();
+			self.lastTrackURL = self.inputToTrackURL(self.lastInput);
+			self.currentSongData.set(self.lastTrackURL);
+			self.updateInputIfNecessary('#songinput', self.lastTrackURL);
+			console.log("Track URL updated:", self.lastTrackURL);
+			self.playCurrentSong();
+		};
+
+		self.playCurrentSong = function() {
 			var track = models.Track.fromURI( self.lastTrackURL );
 			models.player.playTrack(track);
 		};
+
+		self.inputToTrackURL = function(input) {
+			var m = input.match(/spotify:track:(\w+)|open.spotify.com\/track\/(\w+)/);
+			if (m) return 'spotify:track:' + m[1];
+			return self.search(input);
+		};
+
+		self.submitSong = function(e) {
+			self.currentSongData.set($('#songinput').val());
+			$('#songinput').select();
+			e.preventDefault();
+		};
+
+		self.submitRoom = function(e) {
+			self.changeRoom($('#roominput').val());
+			$('#roominput').select();
+			e.preventDefault();
+		};
+
+		self.init = function() {
+			self.changeRoom('welcometohacktech');
+			$('#songinput').select();
+			$('#submitRoom').click(self.submitRoom);
+			$('#submitSong').click(self.submitSong);
+		};
+
 
 		return self;
 	})();
