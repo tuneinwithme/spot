@@ -1,6 +1,6 @@
 <style type="text/css">
 	body {
-		padding: 1em;
+		padding: 3em;
 	}
 </style>
 <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
@@ -20,6 +20,7 @@ LiveDJ = (function(){
 		// $('#roomname').text(roomname);
 		data.on("value", self.onChangeSong);
 		self.currentSongData = data;
+		console.log("room changed to " + roomname);
 	}
 
 	self.onChangeSong = function(data) {
@@ -30,8 +31,12 @@ LiveDJ = (function(){
 		// models.player.playTrack(track);
 	}
 
-	self.update = function() {
-		self.currentSongData.set($('#input').val());
+	self.updateSong = function() {
+		self.currentSongData.set($('#songinput').val());
+	}
+
+	self.updateRoom = function() {
+		self.changeRoom($('#roominput').val());
 	}
 
 	self.init = function() {
@@ -46,8 +51,16 @@ $(document).ready(LiveDJ.init);
 
 <form role="form">
   <div class="form-group">
-    <label for="input">Song Spotify URL</label>
-    <input type="text" class="form-control" id="input" placeholder="spotify:track:&hellip;">
+    <label for="input">Room ID</label>
+    <input type="text" class="form-control" id="roominput" placeholder="room:&hellip;">
   </div>
-  <button type="submit" id="submitSong" onclick="LiveDJ.update(); return false;" class="btn btn-default">ADD</button>
+  <button type="submit" id="changeRoom" onclick="LiveDJ.updateRoom(); return false;" class="btn btn-default">Change Room</button>
+</form>
+
+<form role="form">
+  <div class="form-group">
+    <label for="input">Song Spotify URL</label>
+    <input type="text" class="form-control" id="songinput" placeholder="spotify:track:&hellip;">
+  </div>
+  <button type="submit" id="submitSong" onclick="LiveDJ.updateSong(); return false;" class="btn btn-default">Submit Song</button>
 </form>
