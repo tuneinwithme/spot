@@ -29,7 +29,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 // get started
-app.get('/', routes.getStarted);
+app.get('/', routes.index);
 // specific room
 app.get('/:roomid', routes.room);
 
