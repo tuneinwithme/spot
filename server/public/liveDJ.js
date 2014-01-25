@@ -15,11 +15,25 @@ LiveDJ = (function(){
     }
 
     self.search = function(query){
-        response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
-        res = JSON.parse(response)
+        var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+        var res = JSON.parse(response);
         if (res.tracks[0]){
             return res.tracks[0].href;
         }
+    }
+
+    self.updatePicture = function(){
+        var trackID = self.lastTrackURL;
+        var response = $.getJSON('https://embed.spotify.com/oembed/?url='+trackID+'&callback=?', function(data) {
+            console.log(response);
+            // var res = JSON.parse(response);
+            $('#albumimage').attr('src', data.thumbnail_url);
+            var albumTitle = document.createElement('h2');
+            albumTitle.innerHTML = data.title;
+            $('#titleContainer').html(albumTitle);
+            console.log(albumTitle);
+        });
+
     }
 
     self.updateInputIfNecessary = function(selector, value) {
@@ -44,12 +58,12 @@ LiveDJ = (function(){
     }
 
     self.onDataChange = function(data) {
-        if (!data) console.log("no data recieved"); return;
-        console.log("change");
+        if (!data) return;
         self.lastInput = data.val();
         self.lastTrackURL = self.inputToTrackURL(self.lastInput);
-        self.currentSongData.set(self.lastTrackURL);
+        self.currentSongData.set(self.lastTrackURL ? self.lastTrackURL : null);
         self.updateInputIfNecessary('#songinput', self.lastTrackURL);
+        self.updatePicture();
         console.log("Track URL updated: ", self.lastTrackURL);
         // var track = models.Track.fromURI( self.lastTrackURL );
         // models.player.playTrack(track);

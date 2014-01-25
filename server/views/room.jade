@@ -2,8 +2,17 @@ extends layout
 
 block content
 
-    form(role='form')
-        .form-group
+    #albumContainer
+        img#albumimage.album(alt='sample')
+        #titleContainer
+        form(role='form')
+          .form-group
+            label(for='input') Room ID
+            input#roominput.form-control.flasher(type='text', placeholder='room:…')
+          button#submitRoom.btn.btn-default(type='submit', onclick='LiveDJ.submitRoom(); return false;') Change Room
+        form(role='form')
+          .form-group
             label(for='input') Song Spotify URL
-            input#songinput( type='text', placeholder='spotify:track:…')
-          button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.submitSong(); return false;') ADD
+            input#songinput.form-control.flasher(type='text', placeholder='spotify:track:…')
+          button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.submitSong(); return false;') Submit Song
+

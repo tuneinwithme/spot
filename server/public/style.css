@@ -1,0 +1,21 @@
+body {
+    padding: 2em;
+}
+img.album {
+    max-width: 250px;
+}
+#albumContainer{
+    max-width:250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.form-control.flasher {
+    background-color: white;
+    -webkit-transition: background-color 0.9s linear;
+            transition: background-color 0.9s linear;
+}
+.form-control.flasher.flash {
+    background-color: #FFE68F;
+    -webkit-transition: background-color 0s linear;
+            transition: background-color 0s linear;
+}
