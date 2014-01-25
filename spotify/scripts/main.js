@@ -1,30 +1,32 @@
 require([
-  '$api/models',
-  'scripts/livedj'
+	'$api/models',
+	'scripts/livedj'
 ], function(models, livedj) {
-  'use strict';
+	'use strict';
 
-  livedj.init();
+	livedj.init();
 
 });
 
 
 
-// require([
-//   '$api/models',
-//   'scripts/language-example',
-//   'scripts/cover-example',
-//   'scripts/button-example',
-//   'scripts/playlist-example',
-//   'scripts/livedj'
-// ], function(models, languageExample, coverExample, buttonExample, playlistExample, livedj) {
-//   'use strict';
+/*
+require([
+	'$api/models',
+	'scripts/language-example',
+	'scripts/cover-example',
+	'scripts/button-example',
+	'scripts/playlist-example',
+	'scripts/livedj'
+], function(models, languageExample, coverExample, buttonExample, playlistExample, livedj) {
+	'use strict';
 
-//   // languageExample.doHelloWorld();
-//   // coverExample.doCoverForAlbum();
-//   // buttonExample.doShareButtonForArtist();
-//   // buttonExample.doPlayButtonForAlbum();
-//   // playlistExample.doPlaylistForAlbum();
-//   livedj.init();
+	// languageExample.doHelloWorld();
+	// coverExample.doCoverForAlbum();
+	// buttonExample.doShareButtonForArtist();
+	// buttonExample.doPlayButtonForAlbum();
+	// playlistExample.doPlaylistForAlbum();
+	livedj.init();
 
-// });
+});
+*/

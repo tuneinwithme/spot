@@ -5,12 +5,12 @@
 	.form-control.flasher {
 		background-color: white;
 		-webkit-transition: background-color 0.9s linear;
-			    transition: background-color 0.9s linear;
+				transition: background-color 0.9s linear;
 	}
 	.form-control.flasher.flash {
 		background-color: #FFE68F;
 		-webkit-transition: background-color 0s linear;
-			    transition: background-color 0s linear;
+				transition: background-color 0s linear;
 	}
 </style>
 <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
@@ -27,20 +27,20 @@ LiveDJ = (function(){
 	self.lastTrackURL = undefined;
 
 	self.httpGet = function(theUrl){
-	    var xmlHttp = null;
+		var xmlHttp = null;
 
-	    xmlHttp = new XMLHttpRequest();
-	    xmlHttp.open( "GET", theUrl, false );
-	    xmlHttp.send( null );
-	    return xmlHttp.responseText;
+		xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", theUrl, false );
+		xmlHttp.send( null );
+		return xmlHttp.responseText;
 	}
 
 	self.search = function(query){
-	    response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
-	    res = JSON.parse(response)
-	    if (res.tracks[0]){
-	        return res.tracks[0].href;
-	    }
+		response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+		res = JSON.parse(response)
+		if (res.tracks[0]){
+			return res.tracks[0].href;
+		}
 	}
 
 	self.updateInputIfNecessary = function(selector, value) {
@@ -105,16 +105,16 @@ $(document).ready(LiveDJ.init);
 
 <form role="form">
   <div class="form-group">
-    <label for="input">Room ID</label>
-    <input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
+	<label for="input">Room ID</label>
+	<input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
   </div>
   <button type="submit" id="submitRoom" onclick="LiveDJ.submitRoom(); return false;" class="btn btn-default">Change Room</button>
 </form>
 
 <form role="form">
   <div class="form-group">
-    <label for="input">Song Spotify URL</label>
-    <input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
+	<label for="input">Song Spotify URL</label>
+	<input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
   </div>
   <button type="submit" id="submitSong" onclick="LiveDJ.submitSong(); return false;" class="btn btn-default">Submit Song</button>
 </form>
