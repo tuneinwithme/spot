@@ -125,6 +125,9 @@ h2{
 #songInput{
     margin-bottom: 10px;
 }
+#logo{
+    height: 2em;
+}
 @media (min-resolution: 2dppx) and (max-width: 1080px){
     #albumContainer{
         width:100%;
@@ -140,5 +143,11 @@ h2{
     }
     label{
         font-size: 2em;
+    }
+    body{
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        max-height:100000px;
+
     }
 }

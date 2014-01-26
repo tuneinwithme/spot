@@ -146,7 +146,7 @@ LiveDJ = (function(){
         }
         temp  = document.getElementById('queueDiv');
         temp.scrollTop = temp.scrollHeight;
-        self.changeBackground();
+        //self.changeBackground();
         console.log(self.queueArray);
     }
 
@@ -180,3 +180,14 @@ $(document).ready(function(){
     LiveDJ.init;
     LiveDJ.changeRoom(document.URL.split('/')[4])
 });
+
+function changeBackground() {
+    var hour = new Date().getHours()
+    if (hour < 7 || hour > 18) {
+        $('body').removeClass('day');
+        $('body').addClass('night');
+    }else{
+        $('body').removeClass('night');
+        $('body').addClass('day');
+    }
+}
