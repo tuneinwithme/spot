@@ -6,6 +6,24 @@
 		/*background-repeat: none;*/
 		/*background-size: 100%;*/
 	}
+	body.day{
+		background: -moz-linear-gradient(top, rgba(30,87,153,0.48) 0%, rgba(30,87,153,0.55) 5%, rgba(24,85,148,0.69) 14%, rgba(9,80,135,0.78) 37%, rgba(9,80,135,0.86) 59%, rgba(9,80,135,0.86) 71%); /* FF3.6+ */
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(30,87,153,0.48)), color-stop(5%,rgba(30,87,153,0.55)), color-stop(14%,rgba(24,85,148,0.69)), color-stop(37%,rgba(9,80,135,0.78)), color-stop(59%,rgba(9,80,135,0.86)), color-stop(71%,rgba(9,80,135,0.86))); /* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(top, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(top, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* Opera 11.10+ */
+		background: -ms-linear-gradient(top, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* IE10+ */
+		background: linear-gradient(to bottom, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a1e5799', endColorstr='#db095087',GradientType=0 ); /* IE6-9 */
+			}
+	body.night{
+		background: -moz-linear-gradient(top, rgba(68,71,76,0.95) 5%, rgba(68,71,76,0.98) 13%, rgba(74,75,76,1) 20%, rgba(76,76,76,1) 22%, rgba(76,76,76,1) 31%, rgba(56,56,56,1) 49%, rgba(45,45,45,1) 59%, rgba(0,0,0,1) 99%); /* FF3.6+ */
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(5%,rgba(68,71,76,0.95)), color-stop(13%,rgba(68,71,76,0.98)), color-stop(20%,rgba(74,75,76,1)), color-stop(22%,rgba(76,76,76,1)), color-stop(31%,rgba(76,76,76,1)), color-stop(49%,rgba(56,56,56,1)), color-stop(59%,rgba(45,45,45,1)), color-stop(99%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(top, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(top, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* Opera 11.10+ */
+		background: -ms-linear-gradient(top, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* IE10+ */
+		background: linear-gradient(to bottom, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f244474c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+	}
 	img.album {
 		max-width: 400px;
 	}
@@ -129,16 +147,15 @@ LiveDJ = (function(){
 	}
 
 	self.changeBackground = function() {
-		$('body').css('background-image', function(){
-			var hour = new Date().getHours();
-			console.log(hour);
-			if (hour > 12 && hour < 24){
-				return 'url(http://www.gpnc.org/images/jpegs/animals/17cicada.jpg)';
+			var hour = new Date().getHours()
+			if (hour < 7 || hour > 18) {
+				$('body').removeClass('day');
+				$('body').addClass('night');
 			}else{
-				return 'url(https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQNGEBMvQ55sHEC0xWxvpkyW-H_ZylS9Fk5ktg3OLKLS3w6yCr29w)';
-		}
+				$('body').removeClass('night');
+				$('body').addClass('day');
 	}
-)};
+};
 	return self;
 })();
 

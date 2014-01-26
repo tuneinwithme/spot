@@ -149,6 +149,19 @@ LiveDJ = (function(){
         $('#songinput').select();
     }
 
+    self.changeBackground = function() {
+        var hour = new Date().getHours()
+        if (hour < 7 || hour > 18) {
+            $('body').removeClass('day');
+            $('body').addClass('night');
+        }else{
+            $('body').removeClass('night');
+            $('body').addClass('day');
+        }
+    }
+
+
+
     return self;
 })();
 
