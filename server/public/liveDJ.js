@@ -133,6 +133,8 @@ LiveDJ = (function(){
         var queueItem = document.createElement('p');
         queueItem.innerHTML = snapshot.val().title + " &mdash; " + snapshot.val().artist;
         $('#queueDiv').append(queueItem);
+        temp  = document.getElementById('queueDiv');
+        temp.scrollTop = temp.scrollHeight;
         console.log(self.queueArray);
     }
 
