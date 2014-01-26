@@ -7,23 +7,6 @@ require([
 	var LiveDJ = (function(){
 		var self = {};
 
-		self.roomName = undefined;
-		self.currentSongData = undefined;
-		self.currentSongIndexData = undefined; // the index representation of the current song as in an array
-		self.lastTrackURL = undefined; // last track played
-		self.queue = undefined;
-		self.trackIndex = -1; 
-		//jenny code
-
-		// self.plTest = function() {
-		// 	var playlist = models.Playlist.createTemporary('mytestplaylist').done(function(playlist) {
-		// 		playlist.load('tracks').done(function(loadedPlaylist) {
-		// 			loadedPlaylist.tracks.add(models.Track.fromURI("spotify:track:4VqPOruhp5EdPBeR92t6lQ"));
-		// 			loadedPlaylist.tracks.add(models.Track.fromURI("spotify:track:5HF5PRNJ8KGtbzNPPc93tG"));
-		// 			window.tracks = loadedPlaylist.tracks;
-		// 		});
-		// 	});
-		// };
 		/* Nested class which represents the queue, or playlist of this spotify player. */
 		self.Queue = function() {
 			var queue = {};
@@ -32,25 +15,40 @@ require([
 				queue.spotify = playlist; // queue.spotify now refers to the temp playlist 
 			});
 
-			// queue.spotify = new models.Queue.createTemporary(); //spotify model
-
-			/* Helper method which adds a url to the playlist. */
-			queue.addFromURL = function(trackURL) { 
+			/* Add a track by URL to the queue. */
+			queue.addFromURL = function(trackURL) {
 				queue.spotify.load('tracks').done(function(loadedPlaylist) { // we must load 'tracks' every time
 					console.log('adding', trackURL, 'to queue');
 					loadedPlaylist.tracks.add(models.Track.fromURI(trackURL)); // add to the playlist, which is now loaded
 				});
 			};
 
-			/* Helper method which adds from an arrray of urls. */
+			/* Add multiple tracks by URL to the queue. Used for loading the room queue from old-style array playlists. */
 			queue.addFromURLs = function(trackURLs) {
+				console.warn('queue.addFromURLs should not be used');
 				for (var i = 0; i < trackURLs.length; i++) {
 					var trackURL = trackURLs[i];
 					queue.addFromURL(trackURL);
 				}
 			};
 
-			/* For debugging purposes, a helping method which returns an array representation of the playlist. */
+			/* Add multiple tracks by URL to the queue. Used for loading the room queue. 
+			var trackEntries = [
+				{ search: 'roar', hasUri: true, uri: 'spotify:track:xxxxx', rating: 0 }, // for processed search
+				{ search: 'roar', hasUri: false }, // for raw search
+				...
+			]
+			*/
+			queue.addFromTrackEntry = function(trackEntry) {
+				if (!trackEntry.hasUri) console.warn('track entry', trackEntry, 'has no URI');
+				queue.addFromURL(trackEntry.uri);
+			};
+			queue.addFromTrackEntries = function(trackEntries) {
+				for (var i = 0; i < trackEntries.length; i++)
+					queue.addFromTrackEntry(trackEntries[i]);
+			};
+
+			/* Returns an array representation of the playlist, for debugging purposes. */
 			queue.toArray = function(callback) {
 				queue.spotify.load('tracks').done(function(loadedPlaylist) {
 					loadedPlaylist.tracks.snapshot().done(function(snapshot){
@@ -64,13 +62,25 @@ require([
 				});
 			};
 
+			/* "return" the ith track in the queue. */
+			queue.getTrackByIndex = function(i, callback) {
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					loadedPlaylist.tracks.snapshot().done(function(snapshot) {
+						callback(snapshot.get(i));
+					});
+				});
+			};
+
 			/* Removal helper method. */
-			// queue.removeByIndex = function(i) {
-			// 	queue.spotify.load('tracks').done(function(loadedPlaylist) {
-			// 		console.log('adding', trackURL, 'to queue');
-			// 		loadedPlaylist.tracks.add(models.Track.fromURI(trackURL)); // why the fuck do you do this
-			// 	});
-			// };
+			queue.removeByIndex = function(i, callback) {
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					queue.getTrackByIndex(i, function(track) {
+						console.log('removing', track.uri, 'from queue');
+						loadedPlaylist.tracks.remove(track);
+						if (callback) callback();
+					});
+				});
+			};
 
 			/* Clear the playlist. */
 			queue.clear = function(callback) {
@@ -82,10 +92,7 @@ require([
 			return queue;
 		};
 
-		// our array-backed playlist model, the real spotify playlist is held up to sync with this
-		self.playlist = undefined;
-
-		self.httpGet = function(theUrl){
+		self.httpGet = function(theUrl) {
 			var xmlHttp = null;
 
 			xmlHttp = new XMLHttpRequest();
@@ -94,7 +101,7 @@ require([
 			return xmlHttp.responseText;
 		};
 
-		self.search = function(query){
+		self.search = function(query) {
 			var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
 			var res = JSON.parse(response);
 			if (res.tracks[0]){
@@ -116,15 +123,52 @@ require([
 			}, 0);
 		};
 
-		/* Method to deal with room changing. */
-		self.changeRoom = function(roomName) {	
-			if (self.currentSongIndexData) self.currentSongIndexData.off(); // if thecurrentSongIndexData exists, we turn it off
+		/*
+		Who listens to what kind of data?
+
+		node            player
+		  <---  /song  <----
+		player will emit 'now playing' data for nodes to display
+		        /index <---- 
+		player will periodically save its current position in the queue so that it can be recovered on restart.
+		  <---> /queue  ---->
+		node can add stuff to queue, player uses it as a playlist. in the future, player will be able to rearrange.
+		*/
+
+		self.roomName = null;
+
+		self.songData = null;
+		self.indexData = null;
+		self.queueData = null;
+
+		// self.lastTrackURL = null; // last track played, to prevent duplicates
+		self.queue = null; // Queue for current room, contains Spotify playlist
+		self.index = -1; // -1 means "no value stored"
+
+		self.getFirebase = function(room, path) {
+			return new Firebase('https://livedj01.firebaseio.com/rooms/'+room+'/'+path);
+		};
+
+		/* Method to deal with room changing. TODO Emit image data? */
+		self.changeRoom = function(roomName) {
+			if (self.songData) self.songData.off();
+			if (self.queueData) self.queueData.off();
+
 			roomName = roomName.toLowerCase();
-			self.currentSongIndexData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/index'); // create a new songindexdata
-			self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song'); // create new current song data
-			self.queueData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/queue'); // create new playlist/queue data
-			self.currentSongIndexData.on("value", self.onSongIndexDataChange()); // on any data change, call helper method.
-			self.queue = new self.Queue(); // make a new queue object
+			
+			/* In the case that the room has prior data. */
+			self.songData = self.getFirebase(roomName, 'song');
+			self.indexData = self.getFirebase(roomName, 'index');
+			self.queueData = self.getFirebase(roomName, 'queue');
+			self.queue = new self.Queue();
+
+			self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
+			self.queueData.on('child_added', function(snapshot) {
+				newTrackEntry = snapshot.val();
+				self.queue.addFromTrackEntry(newTrackEntry);
+				// rememeber to look to see if song has already added. if so, cast an upvote
+				// then set -(voting score) as priority
+			});
 
 			self.updateInputIfNecessary('#roominput', roomName); // force room to have val
 			$('#roomname').text(roomName);  // set #roomname text to variable roomName
@@ -150,7 +194,7 @@ require([
 				}
 	
 				self.queue.addFromURL(trackURL); // add the songurl to the queue
-				self.playFromQueueIfNecessary(self.index); 
+				self.playFromQueueIfNecessary(self.index);
 				// self.playSong(trackURL);
 				self.lastTrackURL = trackURL;
 			});
@@ -242,7 +286,14 @@ require([
 		};
 
 		self.submitSong = function(e) {
-			self.currentSongData.set($('#songinput').val());
+			var search = $('#songinput').val();
+			var trackEntry = {
+				search: search,
+				hasUri: true,
+				uri: self.inputToTrackURL(search),
+				// rating: 0,
+			};
+			self.queue.push(trackEntry);
 			$('#songinput').select();
 			e.preventDefault();
 		};
