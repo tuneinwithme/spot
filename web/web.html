@@ -3,19 +3,20 @@
 	body{
 		/*background-color: gray;*/
 		padding: 2em;
-		background-repeat: none;
-		background-size: 100%;
+		/*background-repeat: none;*/
+		/*background-size: 100%;*/
 	}
 	img.album {
-		max-width: 250px;
+		max-width: 400px;
 	}
 	#albumContainer{
-		max-width:250px;
+		max-width:400px;
 		margin-left: auto;
 		margin-right: auto;
 		text-align: center;
+		color:white;
 		font-family: Lucida Sans Unicode;
-		font-size:16px;
+		font-size:26px;
 		padding-bottom: 15px;
 		/*background-color: #90FFB7;*/
 	}
@@ -57,19 +58,18 @@ LiveDJ = (function(){
 			return res.tracks[0].href;
 		}
 	}
-
 	self.updatePicture = function(){
 		var trackID = self.lastTrackURL;
 		var response = $.getJSON('https://embed.spotify.com/oembed/?url='+trackID+'&callback=?', function(data) {
 			console.log(response);
 			// var res = JSON.parse(response);
-			$('#albumimage').attr('src', data.thumbnail_url);
+			bigImage = data.thumbnail_url.replace(/\/cover\//,"/640/");
+			$('#albumimage').attr('src', bigImage);
 			var albumTitle = document.createElement('text');
 			albumTitle.innerHTML = data.title;
 			console.log(albumTitle);
 			$('#titleContainer').html(albumTitle);
 		});
-
 	}
 
 	self.updateInputIfNecessary = function(selector, value) {
