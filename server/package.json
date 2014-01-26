@@ -6,6 +6,10 @@
         "socket.io": "latest",
         "express": "latest",
         "jade": "latest"
-    },
+    }, 
+    "scripts": {
+    "start": "node index.js",
+    "web": "node index.js"
+  },
     "author": "Sean Zhu, Sophie Pham, Dylan Chun Wong, Jenny Peng"
 }
