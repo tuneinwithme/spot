@@ -74,7 +74,7 @@ LiveDJ = (function(){
 
     self.changeRoom = function(roomName) {
         roomName = roomName.toLowerCase();
-        self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song');
+        self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song/uri');
         self.queue = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/queue');
         // $('#roomName').text(roomName);
         self.currentSongData.on("value", self.onDataChange);
