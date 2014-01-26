@@ -93,11 +93,6 @@ require([
 			queue.clear = function(callback) {
 				queue.spotify.load('tracks').done(function(loadedPlaylist) {
 					loadedPlaylist.tracks.clear();
-					if (callback) callback(); // call the callback, if given.
-				});
-			};
-			queue.clearAll = function(callback) {
-				queue.clear(function(){
 					self.queueData.set([]);
 					if (callback) callback(); // call the callback, if given.
 				});
@@ -169,19 +164,6 @@ require([
 
 			// if (self.queue.spotify) self.queue.clear();
 			self.queue = new self.Queue(function(){
-
-				self.queueData.on('value', function(snapshot) {
-					self.queue.clear(function(){
-					var trackEntries = snapshot.val();
-					for (var i = 0; i < trackEntries.length; i++) {
-						var newTrackEntry = trackEntries[i];
-						self.queue.addFromTrackEntry(newTrackEntry);
-					}
-					// rememeber to look to see if song has already added. if so, cast an upvote
-					// then set -(voting score) as priority
-					});
-				});
-
 
 				// self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
 				self.queueData.on('child_added', function(snapshot) {
@@ -374,7 +356,7 @@ require([
 			$('#songinput').select();
 			$('#submitRoom').click(self.submitRoom);
 			$('#submitSong').click(self.submitSong);
-			$('#submitClear').click(self.queue.clearAll);
+			$('#submitClear').click(self.queue.clear);
 			$('#submitPlay').click(self.playFromQueueIfNecessary);
 
 			// setTimeout(function(){
