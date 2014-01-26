@@ -4,6 +4,9 @@ LiveDJ = (function(){
     self.roomName = undefined;
     self.currentSongData = undefined;
     self.lastTrackURL = undefined;
+    self.queue = undefined;
+    self.query = undefined;
+    self.queueArray = [];
 
     self.httpGet = function(theUrl){
         var xmlHttp = null;
@@ -22,6 +25,7 @@ LiveDJ = (function(){
         }
     }
     self.search = function(query){
+        self.query = query; 
         var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
         var res = JSON.parse(response);
         //if (res.tracks[0]){// if the search returns a result
@@ -38,8 +42,8 @@ LiveDJ = (function(){
         }
         $('.searchResult').click(function(e){
             console.log(e.target.id);
-            self.currentSongData.set(e.target.id);
-            $("#searchDiv").html('Song Added!');
+            self.pushQueue(e.target.id, e.target.innerHTML);
+            $("#searchDiv").html('<b>Song Added!</b>');
     });
     }
 
@@ -71,9 +75,10 @@ LiveDJ = (function(){
     self.changeRoom = function(roomName) {
         roomName = roomName.toLowerCase();
         self.currentSongData = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/song');
+        self.queue = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/queue');
         // $('#roomName').text(roomName);
         self.currentSongData.on("value", self.onDataChange);
-
+        self.queue.on("child_added", self.updateQueue);
         self.updateInputIfNecessary('#roominput', roomName);
         console.log("room changed to " + roomName);
     }
@@ -101,6 +106,25 @@ LiveDJ = (function(){
         self.currentSongData.set($('#songinput').val());
         $('#songinput').val('');
         $('#songinput').select();
+    }
+
+    self.pushQueue = function(uri, titleAndArtist){
+        self.queue.push(
+            {
+            search: self.query,
+            hasUri: true,
+            uri:uri,
+            trackInfo: titleAndArtist,
+            rating: 0
+        });
+    }
+
+    self.updateQueue = function(snapshot){
+        self.queueArray.push(snapshot.val());
+        var queueItem = document.createElement('p');
+        queueItem.innerHTML = snapshot.val().trackInfo;
+        $('#queueDiv').append(queueItem);
+        console.log(self.queueArray);
     }
 
     self.submitRoom = function() {
