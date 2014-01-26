@@ -4,8 +4,9 @@ block content
         #albumContainer
             img#albumimage.album(alt='sample')
             #titleContainer
-            #queueDiv
-                b Queue: 
+            #queueCont
+                b Queue:
+                #queueDiv
             #inputfield
                 form(role='form', method="post", action="/change")
                   .form-group
@@ -20,6 +21,6 @@ block content
                     input#songinput.form-control.flasher(type='text', placeholder='spotify:track:…')
                   button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.search($("#songinput").val()); return false;') Search
                 br
-        #searchDiv
+            #searchDiv
 
 

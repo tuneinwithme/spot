@@ -13,6 +13,13 @@ img.album {
 #container{
     max-width: 600px;
 }
+#queueDiv{
+    max-height: 200px;
+    overflow: scroll;
+}
+#queueCont{
+
+}
 .form-control.flasher {
     background-color: white;
     -webkit-transition: background-color 0.9s linear;
