@@ -32,6 +32,8 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 // view room
 app.get('/rooms/:roomid', routes.room);
+//change room
+app.post('/change', routes.changeRoom);
 
 
 // post song request

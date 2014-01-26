@@ -14,12 +14,33 @@ LiveDJ = (function(){
         return xmlHttp.responseText;
     }
 
+    self.simplesearch = function(query){
+        var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
+        var res = JSON.parse(response);
+        if(res.tracks){
+            return res.tracks[0].href;
+        }
+    }
     self.search = function(query){
         var response = self.httpGet('http://ws.spotify.com/search/1/track.json?q='+query);
         var res = JSON.parse(response);
-        if (res.tracks[0]){
-            return res.tracks[0].href;
+        //if (res.tracks[0]){// if the search returns a result
+        //    return res.tracks[0].href;
+        //}
+        $('#searchDiv').html('');
+        for(var i = 0; i<5&&i!=res.tracks.length; i++){
+            var result = document.createElement('div');
+            result.className = 'searchResult'
+            result.id = res.tracks[i].href;
+            result.innerHTML = res.tracks[i].name+' &mdash; '+res.tracks[i].artists[0].name;
+            $('#searchDiv').append(result);
+            $(result).fadeTo("fast",1);
         }
+        $('.searchResult').click(function(e){
+            console.log(e.target.id);
+            self.currentSongData.set(e.target.id);
+            $("#searchDiv").html('Song Added!');
+    });
     }
 
     self.updatePicture = function(){
@@ -60,9 +81,9 @@ LiveDJ = (function(){
     self.onDataChange = function(data) {
         if (!data) return;
         self.lastInput = data.val();
-        self.lastTrackURL = self.inputToTrackURL(self.lastInput);
+        console.log("data is: "+self.lastInput);
+        self.lastTrackURL = self.lastInput;
         self.currentSongData.set(self.lastTrackURL ? self.lastTrackURL : null);
-        self.updateInputIfNecessary('#songinput', self.lastTrackURL);
         self.updatePicture();
         console.log("Track URL updated: ", self.lastTrackURL);
         // var track = models.Track.fromURI( self.lastTrackURL );
@@ -78,6 +99,7 @@ LiveDJ = (function(){
 
     self.submitSong = function() {
         self.currentSongData.set($('#songinput').val());
+        $('#songinput').val('');
         $('#songinput').select();
     }
 

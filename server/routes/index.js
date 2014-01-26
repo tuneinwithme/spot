@@ -8,5 +8,10 @@ exports.room = function(req, res){
 	res.render('room', {
                 "roomId" : roomId
             });
-	
+
 };
+
+exports.changeRoom = function(req, res){
+    console.log("catch");
+    res.redirect("rooms/"+req.body.room);
+}

@@ -19,3 +19,35 @@ img.album {
     -webkit-transition: background-color 0s linear;
             transition: background-color 0s linear;
 }
+
+#albumimage{
+    padding: 5px;
+    box-shadow: 1px 1px 2px 2px #C0C0C0;
+
+}
+
+.searchResult{
+    border-style: solid;
+    border-width: 1px;
+    border-color: #C0C0C0;
+    background-color: #E0E0E0;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0;
+    transition: linear .1s;
+}
+
+.searchResult:hover{
+    opacity: .5;
+}
+#inputfield{
+    display: table-row;
+}
+input {
+    display: table-cell;
+}
+button {
+    display: table-cell;
+}
