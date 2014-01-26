@@ -1,7 +1,15 @@
+html{
+    height: 100%;
+}
 body {
     padding: 2em;
     font-family: 'Open Sans', sans-serif;
     color: white;
+    background-color: black;
+    height: 100%;
+    background-attachment: fixed; !important
+    background-repeat: no-repeat;
+
 }
 body.day{
     background: -moz-linear-gradient(top, rgba(30,87,153,0.48) 0%, rgba(30,87,153,0.55) 5%, rgba(24,85,148,0.69) 14%, rgba(9,80,135,0.78) 37%, rgba(9,80,135,0.86) 59%, rgba(9,80,135,0.86) 71%); /* FF3.6+ */
@@ -11,6 +19,7 @@ body.day{
     background: -ms-linear-gradient(top, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* IE10+ */
     background: linear-gradient(to bottom, rgba(30,87,153,0.48) 0%,rgba(30,87,153,0.55) 5%,rgba(24,85,148,0.69) 14%,rgba(9,80,135,0.78) 37%,rgba(9,80,135,0.86) 59%,rgba(9,80,135,0.86) 71%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a1e5799', endColorstr='#db095087',GradientType=0 ); /* IE6-9 */
+    background-attachment: fixed;
 }
 body.night{
     background: -moz-linear-gradient(top, rgba(68,71,76,0.95) 5%, rgba(68,71,76,0.98) 13%, rgba(74,75,76,1) 20%, rgba(76,76,76,1) 22%, rgba(76,76,76,1) 31%, rgba(56,56,56,1) 49%, rgba(45,45,45,1) 59%, rgba(0,0,0,1) 99%); /* FF3.6+ */
@@ -20,6 +29,7 @@ body.night{
     background: -ms-linear-gradient(top, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* IE10+ */
     background: linear-gradient(to bottom, rgba(68,71,76,0.95) 5%,rgba(68,71,76,0.98) 13%,rgba(74,75,76,1) 20%,rgba(76,76,76,1) 22%,rgba(76,76,76,1) 31%,rgba(56,56,56,1) 49%,rgba(45,45,45,1) 59%,rgba(0,0,0,1) 99%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f244474c', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+    background-attachment: fixed;
 }
 img.album {
     display: inline;
@@ -36,7 +46,17 @@ img.album {
 }
 #queueDiv{
     max-height: 200px;
+    font-size: .75em;
     overflow: scroll;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #C0C0C0;
+    padding: 0;
+    border-radius:4px;
+    margin: 3px;
+}
+#queueCont{
+    font-size: 1.5em;
 }
 #queueDiv::-webkit-scrollbar{
     width:0;
@@ -57,7 +77,8 @@ img.album {
 
 #albumimage{
     padding: 5px;
-    max-width: 400px;
+    width: 400px;
+    height: 400px;
     box-shadow: 1px 1px 2px 2px #505050;
 
 }
@@ -71,27 +92,53 @@ img.album {
     border-width: 1px;
     border-color: #C0C0C0;
     background-color: #E0E0E0;
-    margin: 5px;
+    margin: 10px;
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
     opacity: 0;
-    color: blac;k
+    color: black;
     transition: linear .1s;
+    font-size: 1.5em;
+}
+#searchDiv{
+    margin: 10px;
 }
 
 .searchResult:hover{
     opacity: .5;
 }
-#inputfield{
-    display: table-row;
-}
-input {
-    display: table-cell;
-}
-button {
-    display: table-cell;
+label{
+    font-size: 1.25em;
 }
 a{
     color: white;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: none;
+    color:#C0C0C0;
+}
+h2{
+    font-weight: 700;
+}
+#songInput{
+    margin-bottom: 10px;
+}
+@media (min-resolution: 2dppx) and (max-width: 1080px){
+    #albumContainer{
+        width:100%;
+        max-width:100%;
+    }
+    #albumimage{
+        width:100%;
+        height:auto;
+    }
+    .input-group{
+        zoom: 275%;
+        font-size: 24px;
+    }
+    label{
+        font-size: 2em;
+    }
 }

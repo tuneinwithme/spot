@@ -43,7 +43,13 @@ LiveDJ = (function(){
         $('.searchResult').click(function(e){
             console.log(e.target.id);
             self.pushQueue(e.target.id, e.target.innerHTML);
-            $("#searchDiv").html('<b>Song Added!</b>');
+            $("#searchDiv").html('<h2>Song Added!</h2>');
+            setTimeout(function(){
+                $("#searchDiv").fadeTo('1s', 0, function(){
+                    $("#searchDiv").css('opacity', '1');
+                    $("#searchDiv").html('');
+                });
+            }, 1500);
             $("#songinput").val('');
     });
     }
@@ -79,7 +85,7 @@ LiveDJ = (function(){
         self.queue = new Firebase('https://livedj01.firebaseio.com/rooms/'+roomName+'/queue');
         // $('#roomName').text(roomName);
         self.currentSongData.on("value", self.onDataChange);
-        self.queue.on("child_added", self.updateQueue);
+        self.queue.on("value", self.updateQueue);
         // self.queue.on("child_removed", self.dropQueue);
         self.updateInputIfNecessary('#roominput', roomName);
         console.log("room changed to " + roomName);
@@ -130,10 +136,14 @@ LiveDJ = (function(){
     // }
 
     self.updateQueue = function(snapshot){
-        self.queueArray.push(snapshot.val());
-        var queueItem = document.createElement('p');
-        queueItem.innerHTML = snapshot.val().title + " &mdash; " + snapshot.val().artist;
-        $('#queueDiv').append(queueItem);
+        self.queueArray = (snapshot.val());
+        $('#queueDiv').html('');
+        for(var key in self.queueArray){
+            console.log('fire');
+            var queueItem = document.createElement('p');
+            queueItem.innerHTML = self.queueArray[key].title + " &mdash; " + self.queueArray[key].artist;
+            $('#queueDiv').append(queueItem);
+        }
         temp  = document.getElementById('queueDiv');
         temp.scrollTop = temp.scrollHeight;
         self.changeBackground();

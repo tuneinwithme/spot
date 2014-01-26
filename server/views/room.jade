@@ -9,18 +9,20 @@ block content
                 #queueDiv
             #inputfield
                 form(role='form', method="post", action="/change")
-                  .form-group
-                    label(for='input') Room ID
+                  label(for='input') Room ID
+                  br
+                  .form-group.input-group
                     input#roominput.form-control.flasher(type='text',name='room', placeholder='room:…')
-                  button#submitRoom.btn.btn-default(type='submit') Change Room
-                br
+                    span.input-group-btn
+                        button#submitRoom.btn(type='submit') Change Room
             #inputfield
                 form(role='form')
-                  .form-group
-                    label(for='input') Song Spotify URL
+                  label(for='input') Song Spotify URL
+                  br
+                  .form-group.input-group
                     input#songinput.form-control.flasher(type='text', placeholder='Search a Song!')
-                  button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.search($("#songinput").val()); return false;') Search
-                br
+                    span.input-group-btn
+                        button#submitSong.btn(type='submit', onclick='LiveDJ.search($("#songinput").val()); return false;') Search
             #searchDiv
 
 

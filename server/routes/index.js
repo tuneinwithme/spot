@@ -1,6 +1,6 @@
 exports.index = function(req, res){
 
-    res.render('index', { title: 'liveDJ' });
+    res.render('index', { title: 'listenwith.me' });
 };
 
 exports.room = function(req, res){
