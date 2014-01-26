@@ -93,6 +93,11 @@ require([
 			queue.clear = function(callback) {
 				queue.spotify.load('tracks').done(function(loadedPlaylist) {
 					loadedPlaylist.tracks.clear();
+					if (callback) callback(); // call the callback, if given.
+				});
+			};
+			queue.clearAll = function(callback) {
+				queue.clear(function(){
 					self.queueData.set([]);
 					if (callback) callback(); // call the callback, if given.
 				});
@@ -165,9 +170,10 @@ require([
 			// if (self.queue.spotify) self.queue.clear();
 			self.queue = new self.Queue(function(){
 
-				// self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
+				self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
 				self.queueData.on('child_added', function(snapshot) {
 					var newTrackEntry = snapshot.val();
+					console.log('child_added', newTrackEntry);
 					if (!newTrackEntry.hasMetadata)
 						self.updateTrackMetadata(newTrackEntry.uri, function(track){
 							newTrackEntry.title = track.title;
@@ -195,14 +201,15 @@ require([
 
 
 			// listener to upvote/downvotes 
-			self.queueData.on('child_changed', function(snapshot) {
-			var userName = snapshot.vote(), userData = snapshot.val();
-			alert('User ' + userName + ' now has a name of ' + userData.name.first + ' ' + userData.name.last);
-			});
+			// self.queueData.on('child_changed', function(snapshot) {
+			// var userName = snapshot.vote(), userData = snapshot.val();
+			// alert('User ' + userName + ' now has a name of ' + userData.name.first + ' ' + userData.name.last);
+			// });
 
 
 			self.updateInputIfNecessary('#roominput', roomName); // force room to have val
 			$('#roomname').text(roomName);  // set #roomname text to variable roomName
+			self.roomName = roomName;
 			console.log("room changed to " + roomName);
 		};
 
@@ -235,13 +242,14 @@ require([
 		*/
 
 		// this is fired when Firebase(/song) data changes. being unused in favor of Firebase(/playlist)
-		/*self.onSongDataChange = function(data) {
+		self.onSongDataChange = function(snapshot) {
 			console.warn('onSongDataChange is incomplete and currently unsupported');
-			if (!data) return;
-			self.lastInput = data.val();
-			var trackURL = self.inputToTrackURL(self.lastInput); // dylan parse
-			if (trackURL == self.lastTrackURL) return;
-			self.currentSongData.set(trackURL); // fucking ghetto as shiiiiiieit
+			var data = snapshot.val();
+			if (!data || !data.uri) return;
+			// self.lastInput = data.val();
+			var trackURL = data.uri;
+			// if (trackURL == self.lastTrackURL) return;
+			// self.currentSongData.set(trackURL); // fucking ghetto as shiiiiiieit
 			self.updateInputIfNecessary('#songinput', trackURL); // check if url is same thing
 			console.log("Track URL updated:", trackURL);
 			
@@ -252,23 +260,29 @@ require([
 					if (prevTrackURL == trackURL) return console.warn('prevTrackURL == trackURL, not doing play');
 				}
 	
-				self.queue.addFromURL(trackURL);
-				self.playFromQueueIfNecessary();
-				// self.playSong(trackURL);
+				// self.queue.addFromURL(trackURL);
+				// self.playFromQueueIfNecessary();
+				self.playSong(trackURL);
 				self.lastTrackURL = trackURL;
 			});
 
-		};*/
+		};
 
 		/* If we're not currently playing from the LiveDJ queue, do so. */
 		self.playFromQueueIfNecessary = function() {
-			// console.log('playFromQueueIfNecessary');
+			console.log('playFromQueueIfNecessary');
 			models.player.load(['context','index']).always(function(player){
-				console.log('currently playing from', player.context, player.index,
-							'should be playing from', self.queue.spotify, self.index);
-				if (player.context == self.queue.spotify) self.syncIndex();
-				if (player.context != self.queue.spotify || player.index != self.index)
+				var playerContext = player.context ? player.context.uri : null;
+				var queueContext = self.queue.spotify ? self.queue.spotify.uri : null;
+				console.log('currently playing from', playerContext, player.index,
+							'should be playing from', queueContext, self.index);
+				if (playerContext == queueContext) self.syncIndex();
+				if (playerContext != queueContext || player.index != self.index) {
+					console.log('asking to play from queue');
 					models.player.playContext(self.queue.spotify, self.index);
+					// if (self.roomName)
+						// self.changeRoom(self.roomName);
+				}
 				self.syncIndex();
 			});
 		};
@@ -276,11 +290,12 @@ require([
 		/* Figures out what the correct index should be and saves it to self.index and Firebase. */
 		self.syncIndex = function() {
 			self.indexData.once('value', function(indexData){
-				console.log('indexData.val() =', savedIndex, ', self.index =', self.index);
+				console.log('indexData.val() =', indexData.val(), ', self.index =', self.index);
 				var savedIndex = indexData.val();
 				if (savedIndex >= 0) self.index = savedIndex;
 				else if (self.index >= 0) self.indexData.set(self.index);
 				else {
+					console.log('old index not found, using 0');
 					self.index = 0;
 					self.indexData.set(0);
 				}
@@ -306,27 +321,34 @@ require([
 			return self.search(input);
 		};
 
-		self.updateTrackMetadata = function(trackURL, callback){
+		self.updateTrackMetadata = function(trackURL, callback) {
+			console.log('updateTrackMetadata');
 			var done = [0];
 			var cont = function() {
-				done[0]++;
-				if (done[0] > 1) callback(trackInfo);
+				done[0]--;
+				if (done[0] <= 0) callback(trackInfo);
 			};
 			var trackInfo = {uri: trackURL};
 			var track = models.Track.fromURI(trackURL);
 			track.load(['album', 'artists', 'image', 'name']).done(function(loadedTrack) {
 				trackInfo.image = loadedTrack.image;
 				trackInfo.title = loadedTrack.name;
-				if (loadedTrack.album)
-				loadedTrack.album.load('name').done(function(loadedAlbum){
-					trackInfo.album = loadedAlbum.name;
-					cont();
-				});
-				if (loadedTrack.artist)
-				loadedTrack.artist.load('name').done(function(loadedArtist){
-					trackInfo.artist = loadedAlbum.name;
-					cont();
-				});
+				if (loadedTrack.album) {
+					done[0]++;
+					loadedTrack.album.load('name').done(function(loadedAlbum){
+						console.log('loaded album');
+						trackInfo.album = loadedAlbum.name;
+						cont();
+					});
+				} else trackInfo.album = null;
+				if (loadedTrack.artists && loadedTrack.artists[0]) {
+					done[0]++;
+					loadedTrack.artists[0].load('name').done(function(loadedArtist){
+						console.log('loaded artist');
+						trackInfo.artist = loadedArtist.name;
+						cont();
+					});
+				} else trackInfo.artists = null;
 			});
 		};
 
@@ -339,8 +361,22 @@ require([
 				uri: self.inputToTrackURL(search),
 				// rating: 0,
 			};
-			self.queueData.push(trackEntry);
+			self.songData.set(trackEntry);
 			$('#songinput').select();
+			e.preventDefault();
+		};
+
+		self.submitQueue = function(e) {
+			var search = $('#queueinput').val();
+			var trackEntry = {
+				search: search,
+				hasUri: true,
+				hasMetadata: false,
+				uri: self.inputToTrackURL(search),
+				// rating: 0,
+			};
+			self.queueData.push(trackEntry);
+			$('#queueinput').select();
 			e.preventDefault();
 		};
 
@@ -356,23 +392,28 @@ require([
 			$('#songinput').select();
 			$('#submitRoom').click(self.submitRoom);
 			$('#submitSong').click(self.submitSong);
-			$('#submitClear').click(self.queue.clear);
+			$('#submitQueue').click(self.submitQueue);
+			$('#submitClear').click(function(){self.queue.clearAll();});
 			$('#submitPlay').click(self.playFromQueueIfNecessary);
 
 			// setTimeout(function(){
 			/* Monitors for track changes and sets the current song at /song. */
 			models.player.addEventListener('change', function() {
 				// console.log('player changed!');
-				models.player.load('index').done(function(loadedPlayer) {
+				models.player.load(['context','index']).done(function(player) {
 					// console.log(self.index);
-					self.index = loadedPlayer.index;
-					// console.log(self.index);
-					self.indexData.set(self.index);
-					self.queue.getTrackByIndex(self.index, function(track) {
-						self.songData.set({
-							uri: track.uri
+					var playerContext = player.context ? player.context.uri : null;
+					var queueContext = self.queue.spotify ? self.queue.spotify.uri : null;
+					if (playerContext == queueContext) {
+						self.index = player.index;
+						self.indexData.set(self.index);
+						self.queue.getTrackByIndex(self.index, function(track) {
+							if (track)
+								self.songData.set({
+									uri: track.uri
+								});
 						});
-					});
+					}
 				});
 			});
 			// }, 500);

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>The name of the app</title>
+		<title>ListenWithMe</title>
 		<!-- Include the stylesheets you need for the Views components -->
 		<!-- See https://developer.spotify.com/docs/apps/views/1.0/ -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
@@ -16,27 +16,38 @@
 		<script type="text/javascript" src='scripts/zepto.min.js'></script>
 	</head>
 	<body>
-		<h1>Welcome to LiveDJ!</h1>
-		<h2>You are in room: <span id="roomname"></span>.</h2>
+
+		<h1 style="font-family: arial; font-size: 3em;">tune&#x200a;in&#x200a;with.<img style="height: 1.6em;" src="images/listenwithme-dark.png" />!</h1>
 		
-		<button type="submit" id="submitPlay" class="btn btn-default">Play!</button>
-		<button type="submit" id="submitClear" class="btn btn-default">Clear</button>
+
+		<div class="form-group">
+			<button type="submit" id="submitPlay" class="btn btn-success">Start Playing!</button>
+			<button type="submit" id="submitClear" class="btn btn-warning">Clear Queue</button>
+		</div>
 
 		<form role="form">
-		  <div class="form-group">
-			<label for="input">Room ID</label>
-			<input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
-		  </div>
-		  <button type="submit" id="submitRoom" class="btn btn-default">Change Room</button>
+			<div class="form-group">
+				<label for="roominput">Room ID</label>
+				<div style="font-size: 1em;">Share this link with your friends: <u>tuneinwith.me/rooms/<span id="roomname"></span></u></div>
+				<input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
+				<button type="submit" style="" id="submitRoom" class="btn btn-default">Change Room</button>
+			</div>
 		</form>
-		<br>
 
 		<form role="form">
-		  <div class="form-group">
-			<label for="input">Song Spotify URL</label>
-			<input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
-		  </div>
-		  <button type="submit" id="submitSong" class="btn btn-default">Submit Song</button>
+			<div class="form-group">
+				<label for="songinput">Current Song</label>
+				<input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip; or search">
+				<button type="submit" style="" id="submitSong" class="btn btn-default">Change Song</button>
+			</div>
+		</form>
+
+		<form role="form">
+			<div class="form-group">
+				<label for="queueinput">Queue Song</label>
+				<input type="text" class="form-control flasher" id="queueinput" placeholder="spotify:track:&hellip; or search">
+				<button type="submit" style="" id="submitQueue" class="btn btn-default">Queue Song</button>
+			</div>
 		</form>
 
 		<script src="scripts/main.js"></script>
