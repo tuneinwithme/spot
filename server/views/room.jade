@@ -18,7 +18,7 @@ block content
                 form(role='form')
                   .form-group
                     label(for='input') Song Spotify URL
-                    input#songinput.form-control.flasher(type='text', placeholder='spotify:track:…')
+                    input#songinput.form-control.flasher(type='text', placeholder='Search a Song!')
                   button#submitSong.btn.btn-default(type='submit', onclick='LiveDJ.search($("#songinput").val()); return false;') Search
                 br
             #searchDiv

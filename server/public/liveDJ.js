@@ -44,6 +44,7 @@ LiveDJ = (function(){
             console.log(e.target.id);
             self.pushQueue(e.target.id, e.target.innerHTML);
             $("#searchDiv").html('<b>Song Added!</b>');
+            $("#songinput").val('');
     });
     }
 

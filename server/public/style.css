@@ -1,9 +1,21 @@
 body {
     padding: 2em;
+    font-family: 'Open Sans', sans-serif;
+    color: white;
+    background: rgb(69,72,77); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(69,72,77,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(69,72,77,1)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(69,72,77,1) 0%,rgba(0,0,0,1) 100%); /* W3C */
+    background-size: 100%;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
 img.album {
     display: inline;
     margin: 0;
+    background-color: white;
 }
 #albumContainer{
     max-width:400px;
@@ -17,8 +29,11 @@ img.album {
     max-height: 200px;
     overflow: scroll;
 }
-#queueCont{
-
+#queueDiv::-webkit-scrollbar{
+    width:0;
+}
+#headerTitle{
+    color: #A947C4;
 }
 .form-control.flasher {
     background-color: white;
@@ -34,8 +49,12 @@ img.album {
 #albumimage{
     padding: 5px;
     max-width: 400px;
-    box-shadow: 1px 1px 2px 2px #C0C0C0;
+    box-shadow: 1px 1px 2px 2px #505050;
 
+}
+
+#titleContainer{
+    text-align: center;
 }
 
 .searchResult{
@@ -48,6 +67,7 @@ img.album {
     padding: 5px;
     cursor: pointer;
     opacity: 0;
+    color: blac;k
     transition: linear .1s;
 }
 
@@ -62,4 +82,7 @@ input {
 }
 button {
     display: table-cell;
+}
+a{
+    color: white;
 }
