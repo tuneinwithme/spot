@@ -79,7 +79,7 @@ LiveDJ = (function(){
         // $('#roomName').text(roomName);
         self.currentSongData.on("value", self.onDataChange);
         self.queue.on("child_added", self.updateQueue);
-        self.queue.on("child_removed", self.dropQueue);
+        // self.queue.on("child_removed", self.dropQueue);
         self.updateInputIfNecessary('#roominput', roomName);
         console.log("room changed to " + roomName);
     }
@@ -122,11 +122,11 @@ LiveDJ = (function(){
         });
     }
 
-    self.dropQueue = function(snapshot) {
-        dropped = snapshot.val();
-        if(self.queue.indexOf(dropped) != -1)
-            self.queue.splice(self.queue.indexOf(dropped), 1);
-    }
+    // self.dropQueue = function(snapshot) {
+    //     dropped = snapshot.val();
+    //     if(self.queue.indexOf(dropped) != -1)
+    //         self.queue.splice(self.queue.indexOf(dropped), 1);
+    // }
 
     self.updateQueue = function(snapshot){
         self.queueArray.push(snapshot.val());
