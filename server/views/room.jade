@@ -4,9 +4,6 @@ block content
         #albumContainer
             img#albumimage.album(alt='sample')
             #titleContainer
-            #queueCont
-                b Queue:
-                #queueDiv
             #inputfield
                 form(role='form', method="post", action="/change")
                   label(for='input') Room ID
@@ -15,6 +12,9 @@ block content
                     input#roominput.form-control.flasher(type='text',name='room', placeholder='room:…')
                     span.input-group-btn
                         button#submitRoom.btn(type='submit') Change Room
+            #queueCont
+                b Queue:
+                #queueDiv
             #inputfield
                 form(role='form')
                   label(for='input') Song Spotify URL
