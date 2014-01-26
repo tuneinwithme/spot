@@ -8,11 +8,16 @@ require([
 		var self = {};
 
 		/* Nested class which represents the queue, or playlist of this spotify player. */
-		self.Queue = function() {
+		self.Queue = function(callback) {
 			var queue = {};
 
 			models.Playlist.createTemporary().done(function(playlist) { // create a temporary playlist
 				queue.spotify = playlist; // queue.spotify now refers to the temp playlist 
+				queue.spotify.load('tracks').done(function(loadedPlaylist) {
+					loadedPlaylist.tracks.clear().done(function() {
+						if (callback) callback();
+					});
+				});
 			});
 
 			/* Add a track by URL to the queue. */
@@ -24,13 +29,15 @@ require([
 			};
 
 			/* Add multiple tracks by URL to the queue. Used for loading the room queue from old-style array playlists. */
-			queue.addFromURLs = function(trackURLs) {
+			/*queue.addFromURLs = function(trackURLs) {
 				console.warn('queue.addFromURLs should not be used');
+				console.log('constructing initial play queue');
 				for (var i = 0; i < trackURLs.length; i++) {
 					var trackURL = trackURLs[i];
 					queue.addFromURL(trackURL);
 				}
-			};
+				console.log('done constructing initial play queue');
+			};*/
 
 			/* Add multiple tracks by URL to the queue. Used for loading the room queue. 
 			var trackEntries = [
@@ -130,7 +137,7 @@ require([
 		node            player
 		  <---  /song  <----
 		player will emit 'now playing' data for nodes to display
-		        /index <---- 
+				/index <---- 
 		player will periodically save its current position in the queue so that it can be recovered on restart.
 		  <---> /queue  ---->
 		node can add stuff to queue, player uses it as a playlist. in the future, player will be able to rearrange.
@@ -155,23 +162,45 @@ require([
 			if (self.songData) self.songData.off();
 			if (self.queueData) self.queueData.off();
 
-			roomName = roomName.toLowerCase();
+			// if (self.queue.spotify) self.queue.clear();
+			self.queue = new self.Queue(function(){
+
+				// self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
+				self.queueData.on('child_added', function(snapshot) {
+					var newTrackEntry = snapshot.val();
+					if (!newTrackEntry.hasMetadata)
+						self.updateTrackMetadata(newTrackEntry.uri, function(track){
+							newTrackEntry.title = track.title;
+							newTrackEntry.image = track.image;
+							newTrackEntry.artist = track.artist;
+							newTrackEntry.album = track.album;
+							newTrackEntry.hasMetadata = true;
+							snapshot.ref().set(newTrackEntry);
+						});
+					self.queue.addFromTrackEntry(newTrackEntry);
+					// rememeber to look to see if song has already added. if so, cast an upvote
+					// then set -(voting score) as priority
+
+				});
+
+				self.playFromQueueIfNecessary();
+
+			});
 			
+			roomName = roomName.toLowerCase();
 			/* In the case that the room has prior data. */
 			self.songData = self.getFirebase(roomName, 'song');
 			self.indexData = self.getFirebase(roomName, 'index');
 			self.queueData = self.getFirebase(roomName, 'queue');
-			self.queue = new self.Queue();
 
-			// self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
-			self.queueData.on('child_added', function(snapshot) {
-				var newTrackEntry = snapshot.val();
-				self.queue.addFromTrackEntry(newTrackEntry);
-				// rememeber to look to see if song has already added. if so, cast an upvote
-				// then set -(voting score) as priority
+
+			// listener to upvote/downvotes 
+			self.queueData.on('child_changed', function(snapshot) {
+			var userName = snapshot.vote(), userData = snapshot.val();
+			alert('User ' + userName + ' now has a name of ' + userData.name.first + ' ' + userData.name.last);
 			});
 
-			self.playFromQueueIfNecessary();
+
 			self.updateInputIfNecessary('#roominput', roomName); // force room to have val
 			$('#roomname').text(roomName);  // set #roomname text to variable roomName
 			console.log("room changed to " + roomName);
@@ -206,7 +235,7 @@ require([
 		*/
 
 		// this is fired when Firebase(/song) data changes. being unused in favor of Firebase(/playlist)
-		self.onSongDataChange = function(data) {
+		/*self.onSongDataChange = function(data) {
 			console.warn('onSongDataChange is incomplete and currently unsupported');
 			if (!data) return;
 			self.lastInput = data.val();
@@ -229,28 +258,34 @@ require([
 				self.lastTrackURL = trackURL;
 			});
 
-		};
+		};*/
 
 		/* If we're not currently playing from the LiveDJ queue, do so. */
 		self.playFromQueueIfNecessary = function() {
-			models.player.load('context').done(function(player){player.load('index').done(function(player){
+			// console.log('playFromQueueIfNecessary');
+			models.player.load(['context','index']).always(function(player){
 				console.log('currently playing from', player.context, player.index,
 							'should be playing from', self.queue.spotify, self.index);
+				if (player.context == self.queue.spotify) self.syncIndex();
 				if (player.context != self.queue.spotify || player.index != self.index)
 					models.player.playContext(self.queue.spotify, self.index);
 				self.syncIndex();
-			});});
+			});
 		};
 
 		/* Figures out what the correct index should be and saves it to self.index and Firebase. */
 		self.syncIndex = function() {
-			var savedIndex = self.indexData.val();
-			if (savedIndex > 0) self.index = savedIndex;
-			else if (self.index > 0) self.indexData.set(self.index);
-			else {
-				self.index = 0;
-				self.indexData.set(0);
-			}
+			self.indexData.once('value', function(indexData){
+				console.log('indexData.val() =', savedIndex, ', self.index =', self.index);
+				var savedIndex = indexData.val();
+				if (savedIndex >= 0) self.index = savedIndex;
+				else if (self.index >= 0) self.indexData.set(self.index);
+				else {
+					self.index = 0;
+					self.indexData.set(0);
+				}
+				console.log('indexData.val() =', indexData.val(), ', self.index =', self.index);
+			});
 		};
 
 		self.playSong = function(trackURL, callback) {
@@ -259,17 +294,40 @@ require([
 			models.player.playTrack(track);
 		};
 
+		/* does a search for the most likely match */
 		self.inputToTrackURL = function(input) {
-			console.log("called from inputToTrackUrl " + input);
-			// jenny code
+			console.log("searching '" + input + "'");
 			if (!input) {
 				console.warn('empty input');
 				return;
-			} // input is null for some reason? 
-			//end jenny code
+			}
 			var m = input.match(/spotify:track:(\w+)|open.spotify.com\/track\/(\w+)/);
 			if (m) return 'spotify:track:' + m[1];
 			return self.search(input);
+		};
+
+		self.updateTrackMetadata = function(trackURL, callback){
+			var done = [0];
+			var cont = function() {
+				done[0]++;
+				if (done[0] > 1) callback(trackInfo);
+			};
+			var trackInfo = {uri: trackURL};
+			var track = models.Track.fromURI(trackURL);
+			track.load(['album', 'artists', 'image', 'name']).done(function(loadedTrack) {
+				trackInfo.image = loadedTrack.image;
+				trackInfo.title = loadedTrack.name;
+				if (loadedTrack.album)
+				loadedTrack.album.load('name').done(function(loadedAlbum){
+					trackInfo.album = loadedAlbum.name;
+					cont();
+				});
+				if (loadedTrack.artist)
+				loadedTrack.artist.load('name').done(function(loadedArtist){
+					trackInfo.artist = loadedAlbum.name;
+					cont();
+				});
+			});
 		};
 
 		self.submitSong = function(e) {
@@ -277,6 +335,7 @@ require([
 			var trackEntry = {
 				search: search,
 				hasUri: true,
+				hasMetadata: false,
 				uri: self.inputToTrackURL(search),
 				// rating: 0,
 			};
@@ -297,12 +356,17 @@ require([
 			$('#songinput').select();
 			$('#submitRoom').click(self.submitRoom);
 			$('#submitSong').click(self.submitSong);
+			$('#submitClear').click(self.queue.clear);
 			$('#submitPlay').click(self.playFromQueueIfNecessary);
 
+			// setTimeout(function(){
+			/* Monitors for track changes and sets the current song at /song. */
 			models.player.addEventListener('change', function() {
 				// console.log('player changed!');
 				models.player.load('index').done(function(loadedPlayer) {
+					// console.log(self.index);
 					self.index = loadedPlayer.index;
+					// console.log(self.index);
 					self.indexData.set(self.index);
 					self.queue.getTrackByIndex(self.index, function(track) {
 						self.songData.set({
@@ -311,6 +375,7 @@ require([
 					});
 				});
 			});
+			// }, 500);
 
 		};
 
