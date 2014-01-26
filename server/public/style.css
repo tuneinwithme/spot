@@ -2,12 +2,16 @@ body {
     padding: 2em;
 }
 img.album {
-    max-width: 250px;
+    display: inline;
+    margin: 0;
 }
 #albumContainer{
-    max-width:250px;
+    max-width:400px;
     margin-left: auto;
     margin-right: auto;
+}
+#container{
+    max-width: 600px;
 }
 .form-control.flasher {
     background-color: white;
@@ -22,6 +26,7 @@ img.album {
 
 #albumimage{
     padding: 5px;
+    max-width: 400px;
     box-shadow: 1px 1px 2px 2px #C0C0C0;
 
 }

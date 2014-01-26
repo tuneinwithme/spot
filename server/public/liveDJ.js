@@ -52,13 +52,13 @@ LiveDJ = (function(){
         var response = $.getJSON('https://embed.spotify.com/oembed/?url='+trackID+'&callback=?', function(data) {
             console.log(response);
             // var res = JSON.parse(response);
-            $('#albumimage').attr('src', data.thumbnail_url);
+            bigImage = data.thumbnail_url.replace(/\/cover\//,"/640/");
+            $('#albumimage').attr('src', bigImage);
             var albumTitle = document.createElement('h2');
             albumTitle.innerHTML = data.title;
-            $('#titleContainer').html(albumTitle);
             console.log(albumTitle);
+            $('#titleContainer').html(albumTitle);
         });
-
     }
 
     self.updateInputIfNecessary = function(selector, value) {
@@ -79,6 +79,7 @@ LiveDJ = (function(){
         // $('#roomName').text(roomName);
         self.currentSongData.on("value", self.onDataChange);
         self.queue.on("child_added", self.updateQueue);
+        self.queue.on("child_removed", self.dropQueue);
         self.updateInputIfNecessary('#roominput', roomName);
         console.log("room changed to " + roomName);
     }
@@ -109,20 +110,28 @@ LiveDJ = (function(){
     }
 
     self.pushQueue = function(uri, titleAndArtist){
+        var split = titleAndArtist.split(' — ')
         self.queue.push(
             {
             search: self.query,
             hasUri: true,
             uri:uri,
-            trackInfo: titleAndArtist,
+            title: split[0],
+            artist: split[1],
             rating: 0
         });
+    }
+
+    self.dropQueue = function(snapshot) {
+        dropped = snapshot.val();
+        if(self.queue.indexOf(dropped) != -1)
+            self.queue.splice(self.queue.indexOf(dropped), 1);
     }
 
     self.updateQueue = function(snapshot){
         self.queueArray.push(snapshot.val());
         var queueItem = document.createElement('p');
-        queueItem.innerHTML = snapshot.val().trackInfo;
+        queueItem.innerHTML = snapshot.val().title + " &mdash; " + snapshot.val().artist;
         $('#queueDiv').append(queueItem);
         console.log(self.queueArray);
     }
