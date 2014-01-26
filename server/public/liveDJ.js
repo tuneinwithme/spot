@@ -136,6 +136,7 @@ LiveDJ = (function(){
         $('#queueDiv').append(queueItem);
         temp  = document.getElementById('queueDiv');
         temp.scrollTop = temp.scrollHeight;
+        self.changeBackground();
         console.log(self.queueArray);
     }
 
