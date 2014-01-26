@@ -19,22 +19,24 @@
 		<h1>Welcome to LiveDJ!</h1>
 		<h2>You are in room: <span id="roomname"></span>.</h2>
 		
-		<form role="form">
+		<button type="submit" id="submitPlay" class="btn btn-default">Play!</button>
+
+		<div role="form">
 		  <div class="form-group">
 			<label for="input">Room ID</label>
 			<input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
 		  </div>
 		  <button type="submit" id="submitRoom" class="btn btn-default">Change Room</button>
-		</form>
+		</div>
 		<br>
 
-		<form role="form">
+		<div role="form">
 		  <div class="form-group">
 			<label for="input">Song Spotify URL</label>
 			<input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
 		  </div>
 		  <button type="submit" id="submitSong" class="btn btn-default">Submit Song</button>
-		</form>
+		</div>
 
 		<script src="scripts/main.js"></script>
 	</body>

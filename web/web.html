@@ -1,6 +1,10 @@
-<style type="text/css">
-	body {
+<link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<style type="text/css">	
+	body{
+		/*background-color: gray;*/
 		padding: 2em;
+		background-repeat: none;
+		background-size: 100%;
 	}
 	img.album {
 		max-width: 250px;
@@ -9,6 +13,11 @@
 		max-width:250px;
 		margin-left: auto;
 		margin-right: auto;
+		text-align: center;
+		font-family: Lucida Sans Unicode;
+		font-size:16px;
+		padding-bottom: 15px;
+		/*background-color: #90FFB7;*/
 	}
 	.form-control.flasher {
 		background-color: white;
@@ -19,10 +28,8 @@
 		background-color: #FFE68F;
 		-webkit-transition: background-color 0s linear;
 				transition: background-color 0s linear;
-	}
-	
+	}	
 </style>
-<link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
 <script type="text/javascript" src='https://cdn.firebase.com/js/client/1.0.2/firebase.js'></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <!-- <script type="text/javascript" src='https://cdn.firebase.com/js/simple-login/1.2.1/firebase-simple-login.js'></script> -->
@@ -58,7 +65,7 @@ LiveDJ = (function(){
 			console.log(response);
 			// var res = JSON.parse(response);
 			$('#albumimage').attr('src', data.thumbnail_url);
-			var albumTitle = document.createElement('h2');
+			var albumTitle = document.createElement('text');
 			albumTitle.innerHTML = data.title;
 			console.log(albumTitle);
 			$('#titleContainer').html(albumTitle);
@@ -94,6 +101,7 @@ LiveDJ = (function(){
 		self.currentSongData.set(self.lastTrackURL ? self.lastTrackURL : null);
 		self.updateInputIfNecessary('#songinput', self.lastTrackURL);
 		self.updatePicture();
+		self.changeBackground();
 		console.log("Track URL updated: ", self.lastTrackURL);
 		// var track = models.Track.fromURI( self.lastTrackURL );
 		// models.player.playTrack(track);
@@ -121,15 +129,28 @@ LiveDJ = (function(){
 		$('#songinput').select();
 	}
 
+	self.changeBackground = function() {
+		$('body').css('background-image', function(){
+			var hour = new Date().getHours();
+			console.log(hour);
+			if (hour > 12 && hour < 24){
+				return 'url(http://www.gpnc.org/images/jpegs/animals/17cicada.jpg)';
+			}else{
+				return 'url(https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQNGEBMvQ55sHEC0xWxvpkyW-H_ZylS9Fk5ktg3OLKLS3w6yCr29w)';
+		}
+	}
+)};
 	return self;
 })();
 
 $(document).ready(LiveDJ.init);
 </script>
+
 <div id="albumContainer">
-	<div id="titleContainer"></div>
 	<img class="album" id="albumimage" alt="sample">
+	<div id="titleContainer"></div>
 </div>
+
 <form role="form">
   <div class="form-group">
 	<label for="input">Room ID</label>
@@ -145,4 +166,3 @@ $(document).ready(LiveDJ.init);
   </div>
   <button type="submit" id="submitSong" onclick="LiveDJ.submitSong(); return false;" class="btn btn-default">Submit Song</button>
 </form>
-

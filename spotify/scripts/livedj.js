@@ -86,6 +86,7 @@ require([
 			queue.clear = function(callback) {
 				queue.spotify.load('tracks').done(function(loadedPlaylist) {
 					loadedPlaylist.tracks.clear();
+					self.queueData.set([]);
 					if (callback) callback(); // call the callback, if given.
 				});
 			};
@@ -162,19 +163,21 @@ require([
 			self.queueData = self.getFirebase(roomName, 'queue');
 			self.queue = new self.Queue();
 
-			self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
+			// self.songData.on("value", self.onSongDataChange); // on any data change, call helper method.
 			self.queueData.on('child_added', function(snapshot) {
-				newTrackEntry = snapshot.val();
+				var newTrackEntry = snapshot.val();
 				self.queue.addFromTrackEntry(newTrackEntry);
 				// rememeber to look to see if song has already added. if so, cast an upvote
 				// then set -(voting score) as priority
 			});
 
+			self.playFromQueueIfNecessary();
 			self.updateInputIfNecessary('#roominput', roomName); // force room to have val
 			$('#roomname').text(roomName);  // set #roomname text to variable roomName
 			console.log("room changed to " + roomName);
 		};
 
+		/*
 		// this is fired when Firebase(/song) data changes. being unused in favor of Firebase(/playlist) // what the fuck this is totally being used
 		self.onSongIndexDataChange = function(data) {
 			if (!data || data == -1) return;
@@ -194,15 +197,17 @@ require([
 				}
 	
 				self.queue.addFromURL(trackURL); // add the songurl to the queue
-				self.playFromQueueIfNecessary(self.index);
+				self.playFromQueueIfNecessary();
 				// self.playSong(trackURL);
 				self.lastTrackURL = trackURL;
 			});
 
 		};
+		*/
 
 		// this is fired when Firebase(/song) data changes. being unused in favor of Firebase(/playlist)
 		self.onSongDataChange = function(data) {
+			console.warn('onSongDataChange is incomplete and currently unsupported');
 			if (!data) return;
 			self.lastInput = data.val();
 			var trackURL = self.inputToTrackURL(self.lastInput); // dylan parse
@@ -226,59 +231,41 @@ require([
 
 		};
 
-
-		/*		
-		this is fired when Firebase(/playlist) data changes.
-		self.onPlaylistDataChange = function(data) {
-			if (!data) return;
-			if (self.trackIndex != -1) 
-			self.lastInput = data.val();
-			self.lastTrackURL = self.inputToTrackURL(self.lastInput); // dylan parse
-			self.currentSongData.set(self.lastTrackURL); // fucking ghetto as shiiiiiieit
-			self.updateInputIfNecessary('#songinput', self.lastTrackURL); // check if url is same thing
-			console.log("Track URL updated:", self.lastTrackURL);
-			//self.playCurrentSong();
-			// jenny shit code
-			self.addToPlaylist();
+		/* If we're not currently playing from the LiveDJ queue, do so. */
+		self.playFromQueueIfNecessary = function() {
+			models.player.load('context').done(function(player){player.load('index').done(function(player){
+				console.log('currently playing from', player.context, player.index,
+							'should be playing from', self.queue.spotify, self.index);
+				if (player.context != self.queue.spotify || player.index != self.index)
+					models.player.playContext(self.queue.spotify, self.index);
+				self.syncIndex();
+			});});
 		};
-		*/
 
-
-
-		// jenny code
-		// self.listener = function() {
-		// 	models.player.addEventListener('change', self.callback());
-		// 	index ++; 
-		// }
-		// self.callback = function() {
-
-		// }
-
-		//jenny code
-		self.addToPlaylist = function() {
-			var track = models.Track.fromURI( self.lastTrackURL );
-			self.pl.add(track);
+		/* Figures out what the correct index should be and saves it to self.index and Firebase. */
+		self.syncIndex = function() {
+			var savedIndex = self.indexData.val();
+			if (savedIndex > 0) self.index = savedIndex;
+			else if (self.index > 0) self.indexData.set(self.index);
+			else {
+				self.index = 0;
+				self.indexData.set(0);
+			}
 		};
-		/* Method to remove duplicates submissions. */
-		self.playFromQueueIfNecessary = function(index) {
-			models.player.load('context').done(function(loadedPlayer){
-				console.log(loadedPlayer.context, self.queue.spotify)
-				if (loadedPlayer.context != self.queue.spotify)
-					models.player.playContext(self.queue.spotify, index);
-			});
-
-		}
 
 		self.playSong = function(trackURL, callback) {
 			console.log('playing', trackURL);
 			var track = models.Track.fromURI( trackURL );
-			loadedPlayer.playTrack(track);
+			models.player.playTrack(track);
 		};
 
 		self.inputToTrackURL = function(input) {
 			console.log("called from inputToTrackUrl " + input);
 			// jenny code
-			//if (!input) return; // input is null for some reason? 
+			if (!input) {
+				console.warn('empty input');
+				return;
+			} // input is null for some reason? 
 			//end jenny code
 			var m = input.match(/spotify:track:(\w+)|open.spotify.com\/track\/(\w+)/);
 			if (m) return 'spotify:track:' + m[1];
@@ -293,7 +280,7 @@ require([
 				uri: self.inputToTrackURL(search),
 				// rating: 0,
 			};
-			self.queue.push(trackEntry);
+			self.queueData.push(trackEntry);
 			$('#songinput').select();
 			e.preventDefault();
 		};
@@ -304,19 +291,27 @@ require([
 			e.preventDefault();
 		};
 
-		self.listener = function() {
-			models.player.addEventListener('change', function() { 
-
-			 });
-		}
-
 		self.init = function() {
 			self.changeRoom('welcometohacktech');
+
 			$('#songinput').select();
 			$('#submitRoom').click(self.submitRoom);
 			$('#submitSong').click(self.submitSong);
-			//create a playlist
-			self.pl = new models.Playlist();
+			$('#submitPlay').click(self.playFromQueueIfNecessary);
+
+			models.player.addEventListener('change', function() {
+				// console.log('player changed!');
+				models.player.load('index').done(function(loadedPlayer) {
+					self.index = loadedPlayer.index;
+					self.indexData.set(self.index);
+					self.queue.getTrackByIndex(self.index, function(track) {
+						self.songData.set({
+							uri: track.uri
+						});
+					});
+				});
+			});
+
 		};
 
 
