@@ -1,0 +1,101 @@
+2014-01-26T06:11:42.995988+00:00 app[web.1]: npm ERR! not with npm itself.
+2014-01-26T06:11:42.996327+00:00 app[web.1]: npm ERR!     node index.js
+2014-01-26T06:11:42.995154+00:00 app[web.1]: npm ERR! Failed at the liveDJ@0.0.0 start script.
+2014-01-26T06:11:42.996863+00:00 app[web.1]: npm ERR! There is likely additional logging output above.
+2014-01-26T06:11:42.994506+00:00 app[web.1]: npm ERR! liveDJ@0.0.0 start: `node index.js`
+2014-01-26T06:11:42.996161+00:00 app[web.1]: npm ERR! Tell the author that this fails on your system:
+2014-01-26T06:11:42.997585+00:00 app[web.1]: npm ERR! command "/app/vendor/node/bin/node" "/app/vendor/node/bin/npm" "start"
+2014-01-26T06:11:42.997140+00:00 app[web.1]: npm ERR! System Linux 3.8.11-ec2
+2014-01-26T06:11:42.994754+00:00 app[web.1]: npm ERR! Exit status 8
+2014-01-26T06:11:42.995818+00:00 app[web.1]: npm ERR! This is most likely a problem with the liveDJ package,
+2014-01-26T06:11:42.996696+00:00 app[web.1]: npm ERR!     npm owner ls liveDJ
+2014-01-26T06:11:42.997819+00:00 app[web.1]: npm ERR! cwd /app
+2014-01-26T06:11:42.996523+00:00 app[web.1]: npm ERR! You can get their info via:
+2014-01-26T06:11:42.998263+00:00 app[web.1]: npm ERR! npm -v 1.3.24
+2014-01-26T06:11:42.998033+00:00 app[web.1]: npm ERR! node -v v0.10.25
+2014-01-26T06:11:42.998504+00:00 app[web.1]: npm ERR! code ELIFECYCLE
+2014-01-26T06:11:43.001100+00:00 app[web.1]: npm ERR! not ok code 0
+2014-01-26T06:11:43.000199+00:00 app[web.1]: npm ERR! 
+2014-01-26T06:11:43.000506+00:00 app[web.1]: npm ERR! Additional logging details can be found in:
+2014-01-26T06:11:43.000710+00:00 app[web.1]: npm ERR!     /app/npm-debug.log
+2014-01-26T06:11:44.380340+00:00 heroku[web.1]: Process exited with status 1
+2014-01-26T06:11:44.390339+00:00 heroku[web.1]: State changed from starting to crashed
+2014-01-26T06:11:56.173583+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/favicon.ico host=cicadabuzz.herokuapp.com request_id=76e750f6-fd5f-41da-8de0-c0f22a419bd1 fwd="71.177.17.222" dyno= connect= service= status=503 bytes=
+2014-01-26T06:11:57.816405+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/ host=cicadabuzz.herokuapp.com request_id=f05c7e0e-2848-42a3-a621-8a82c17a32a2 fwd="71.177.17.222" dyno= connect= service= status=503 bytes=
+2014-01-26T06:11:58.880985+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/favicon.ico host=cicadabuzz.herokuapp.com request_id=768defca-3361-4380-bbe6-684347ba326b fwd="71.177.17.222" dyno= connect= service= status=503 bytes=
+2014-01-26T06:12:41+00:00 heroku[slug-compiler]: Slug compilation started
+2014-01-26T06:12:49.132799+00:00 heroku[api]: Deploy d3830be by d.chunwong@gmail.com
+2014-01-26T06:12:49.166221+00:00 heroku[api]: Release v6 created by d.chunwong@gmail.com
+2014-01-26T06:12:49+00:00 heroku[slug-compiler]: Slug compilation finished
+2014-01-26T06:12:49.848054+00:00 heroku[web.1]: State changed from crashed to starting
+2014-01-26T06:12:52.260420+00:00 heroku[web.1]: Starting process with command `npm start`
+2014-01-26T06:12:53.915585+00:00 app[web.1]: 
+2014-01-26T06:12:53.915585+00:00 app[web.1]: 
+2014-01-26T06:12:53.915585+00:00 app[web.1]: > liveDJ@0.0.0 start /app
+2014-01-26T06:12:53.915585+00:00 app[web.1]: > node index.js
+2014-01-26T06:12:54.081868+00:00 app[web.1]: 
+2014-01-26T06:12:54.084607+00:00 app[web.1]: Error: Cannot find module 'firebase'
+2014-01-26T06:12:54.082173+00:00 app[web.1]: module.js:340
+2014-01-26T06:12:54.082499+00:00 app[web.1]:     throw err;
+2014-01-26T06:12:54.082499+00:00 app[web.1]:           ^
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Function.Module._resolveFilename (module.js:338:15)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Function.Module._load (module.js:280:25)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Module.require (module.js:364:17)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at require (module.js:380:17)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Object.<anonymous> (/app/index.js:6:16)
+2014-01-26T06:12:54.090711+00:00 app[web.1]: 
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Module._compile (module.js:456:26)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Object.Module._extensions..js (module.js:474:10)
+2014-01-26T06:12:54.084607+00:00 app[web.1]:     at Module.load (module.js:356:32)
+2014-01-26T06:12:54.084791+00:00 app[web.1]:     at Function.Module._load (module.js:312:12)
+2014-01-26T06:12:54.084791+00:00 app[web.1]:     at Function.Module.runMain (module.js:497:10)
+2014-01-26T06:12:54.098596+00:00 app[web.1]: npm ERR! liveDJ@0.0.0 start: `node index.js`
+2014-01-26T06:12:54.098747+00:00 app[web.1]: npm ERR! Exit status 8
+2014-01-26T06:12:54.098870+00:00 app[web.1]: npm ERR! 
+2014-01-26T06:12:54.099557+00:00 app[web.1]: npm ERR! This is most likely a problem with the liveDJ package,
+2014-01-26T06:12:54.099069+00:00 app[web.1]: npm ERR! Failed at the liveDJ@0.0.0 start script.
+2014-01-26T06:12:54.099650+00:00 app[web.1]: npm ERR! not with npm itself.
+2014-01-26T06:12:54.099794+00:00 app[web.1]: npm ERR! Tell the author that this fails on your system:
+2014-01-26T06:12:54.100033+00:00 app[web.1]: npm ERR! You can get their info via:
+2014-01-26T06:12:54.100146+00:00 app[web.1]: npm ERR!     npm owner ls liveDJ
+2014-01-26T06:12:54.100283+00:00 app[web.1]: npm ERR! There is likely additional logging output above.
+2014-01-26T06:12:54.099923+00:00 app[web.1]: npm ERR!     node index.js
+2014-01-26T06:12:54.100665+00:00 app[web.1]: npm ERR! command "/app/vendor/node/bin/node" "/app/vendor/node/bin/npm" "start"
+2014-01-26T06:12:54.100782+00:00 app[web.1]: npm ERR! cwd /app
+2014-01-26T06:12:54.100888+00:00 app[web.1]: npm ERR! node -v v0.10.25
+2014-01-26T06:12:54.101045+00:00 app[web.1]: npm ERR! npm -v 1.3.24
+2014-01-26T06:12:54.101174+00:00 app[web.1]: npm ERR! code ELIFECYCLE
+2014-01-26T06:12:54.104172+00:00 app[web.1]: npm ERR! 
+2014-01-26T06:12:54.104368+00:00 app[web.1]: npm ERR! Additional logging details can be found in:
+2014-01-26T06:12:54.104504+00:00 app[web.1]: npm ERR!     /app/npm-debug.log
+2014-01-26T06:12:54.100441+00:00 app[web.1]: npm ERR! System Linux 3.8.11-ec2
+2014-01-26T06:12:54.104788+00:00 app[web.1]: npm ERR! not ok code 0
+2014-01-26T06:12:55.210551+00:00 heroku[web.1]: Process exited with status 1
+2014-01-26T06:12:55.222979+00:00 heroku[web.1]: State changed from starting to crashed
+2014-01-26T06:11:54.981543+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/ host=cicadabuzz.herokuapp.com request_id=8f3a730d-2934-45db-935a-6c165931a9a3 fwd="71.177.17.222" dyno= connect= service= status=503 bytes=
+2014-01-26T06:13:27.309296+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/favicon.ico host=cicadabuzz.herokuapp.com request_id=ee48886f-b57b-494f-a123-cf83c604a330 fwd="71.177.17.217" dyno= connect= service= status=503 bytes=
+2014-01-26T06:16:46+00:00 heroku[slug-compiler]: Slug compilation started
+2014-01-26T06:16:56.629357+00:00 heroku[api]: Deploy fbe7387 by d.chunwong@gmail.com
+2014-01-26T06:16:56.642932+00:00 heroku[api]: Release v7 created by d.chunwong@gmail.com
+2014-01-26T06:16:56+00:00 heroku[slug-compiler]: Slug compilation finished
+2014-01-26T06:16:57.318703+00:00 heroku[web.1]: State changed from crashed to starting
+2014-01-26T06:16:59.374497+00:00 heroku[web.1]: Starting process with command `node index.js`
+2014-01-26T06:17:00.458972+00:00 app[web.1]: module.js:340
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Function.Module._resolveFilename (module.js:338:15)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Function.Module._load (module.js:280:25)
+2014-01-26T06:17:00.458793+00:00 app[web.1]: 
+2014-01-26T06:17:00.459240+00:00 app[web.1]:     throw err;
+2014-01-26T06:17:00.461446+00:00 app[web.1]: Error: Cannot find module 'firebase'
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Object.<anonymous> (/app/index.js:6:16)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Module._compile (module.js:456:26)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Module.require (module.js:364:17)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Module.load (module.js:356:32)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Function.Module._load (module.js:312:12)
+2014-01-26T06:17:00.459240+00:00 app[web.1]:           ^
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at require (module.js:380:17)
+2014-01-26T06:17:00.461665+00:00 app[web.1]:     at Function.Module.runMain (module.js:497:10)
+2014-01-26T06:17:00.461446+00:00 app[web.1]:     at Object.Module._extensions..js (module.js:474:10)
+2014-01-26T06:17:01.696108+00:00 heroku[web.1]: State changed from starting to crashed
+2014-01-26T06:17:01.673790+00:00 heroku[web.1]: Process exited with status 8
+2014-01-26T06:17:04.608936+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/favicon.ico host=cicadabuzz.herokuapp.com request_id=ab404043-566f-4a8e-b891-c63d8ad5e8df fwd="71.177.17.217" dyno= connect= service= status=503 bytes=
+2014-01-26T06:17:03.452608+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path=/ host=cicadabuzz.herokuapp.com request_id=3a5b365d-3b56-43f9-a563-dbe1c55e51c6 fwd="71.177.17.217" dyno= connect= service= status=503 bytes=
