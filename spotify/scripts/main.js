@@ -4,6 +4,7 @@ require([
 ], function(models, livedj) {
 	'use strict';
 
+	window.models = models;
 	window.LiveDJ = livedj.LiveDJ;
 	$(document).ready(livedj.LiveDJ.init);
 

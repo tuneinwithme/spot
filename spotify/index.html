@@ -20,23 +20,24 @@
 		<h2>You are in room: <span id="roomname"></span>.</h2>
 		
 		<button type="submit" id="submitPlay" class="btn btn-default">Play!</button>
+		<button type="submit" id="submitClear" class="btn btn-default">Clear</button>
 
-		<div role="form">
+		<form role="form">
 		  <div class="form-group">
 			<label for="input">Room ID</label>
 			<input type="text" class="form-control flasher" id="roominput" placeholder="room:&hellip;">
 		  </div>
 		  <button type="submit" id="submitRoom" class="btn btn-default">Change Room</button>
-		</div>
+		</form>
 		<br>
 
-		<div role="form">
+		<form role="form">
 		  <div class="form-group">
 			<label for="input">Song Spotify URL</label>
 			<input type="text" class="form-control flasher" id="songinput" placeholder="spotify:track:&hellip;">
 		  </div>
 		  <button type="submit" id="submitSong" class="btn btn-default">Submit Song</button>
-		</div>
+		</form>
 
 		<script src="scripts/main.js"></script>
 	</body>
