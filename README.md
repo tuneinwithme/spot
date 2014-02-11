@@ -7,6 +7,10 @@ Database managed by Firebase.
 
 Spotify desktop users can create private listening parties which generate a url which they can then forward to their friends who can remotely control the queue using mobile devices.
 
+Web Interface Server
+====================
+See [Here](https://github.com/jennypeng/tuneinwith.me-server/) for Node.js server that handles web interface.
+
 TODO
 ======== 
 1. Implement upvote/downvote system for song choices
