@@ -13,7 +13,7 @@
   "AppName": {
     "en": "listenwith.me"
   },
-  "BundleIdentifier": "livedj-01",
+  "BundleIdentifier": "tuneinwithme",
   "BundleType": "Application",
   "BundleVersion": "0.0.1",
   "Dependencies": {
