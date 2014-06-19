@@ -1,6 +1,6 @@
 {
   "AppDescription": {
-    "en": "Description of My Boilerplate App"
+    "en": "Friends let friends choose songs."
   },
   "AppIcon": {
     "18x18": "images/icons/icon-18x18.png",
@@ -11,7 +11,7 @@
     "300x300": "images/icons/icon-300x300.png"
   },
   "AppName": {
-    "en": "My Boilerplate App"
+    "en": "tuneinwith.me"
   },
   "BundleIdentifier": "tuneinwithme",
   "BundleType": "Application",
@@ -21,7 +21,7 @@
     "views": "1.10.0"
   },
   "RequiredPermissions": [
-    "https://api.mygreatapp.com"
+    "https://tuneinwithme.firebaseio.com"
   ],
   "SupportedDeviceClasses": [
     "Web",
@@ -30,5 +30,5 @@
   "SupportedLanguages": [
     "en"
   ],
-  "VendorIdentifier": "com.myorganization"
+  "VendorIdentifier": "me.tuneinwith"
 }
