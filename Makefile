@@ -33,4 +33,17 @@ clean:
 	@rm -f $(CSS_FILE) $(ALL_JS_FILES) $(JS_BUILT)
 
 
-.PHONY: all clean
+install-cp: all
+	mkdir -p ~/Spotify
+	rm -rf ~/Spotify/tuneinwithme
+	cp -R app ~/Spotify/tuneinwithme
+
+install-ln:
+	mkdir -p ~/Spotify
+	rm -f ~/Spotify/tuneinwithme
+	ln -sv $(shell pwd)/app ~/Spotify/tuneinwithme
+
+uninstall:
+	rm -rf ~/Spotify/tuneinwithme
+
+.PHONY: all clean install-cp uninstall-cp
