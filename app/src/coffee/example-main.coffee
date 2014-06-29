@@ -1,9 +1,9 @@
 require [
   "$api/models"
-  "scripts/example-language"
-  "scripts/example-cover"
-  "scripts/example-button"
-  "scripts/example-playlist"
+  "assets/scripts/example-language"
+  "assets/scripts/example-cover"
+  "assets/scripts/example-button"
+  "assets/scripts/example-playlist"
 ], (models, languageExample, coverExample, buttonExample, playlistExample) ->
   "use strict"
 
